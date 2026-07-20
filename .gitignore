@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.env
+.venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data
+/data/raw/
+/data/processed/
+*.csv
+*.parquet
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Credentials and keys - NEVER commit these
+*.json
+*.key
+service-account-*.json
+credentials.json
+
+# Other
+.vscode/
+.idea/
