@@ -1,4 +1,0 @@
--- 04_device_analysis.sql (ARCHIVED)
--- This file has been superseded by sql/06_device_analysis.sql which provides a session-level analysis
--- For reproducibility, use sql/06_device_analysis.sql (unit: sessions) as the primary device comparison.
--- This archived file is preserved for reference and should not be used for the primary dashboard.

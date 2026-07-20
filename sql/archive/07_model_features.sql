@@ -1,4 +1,0 @@
--- 07_model_features.sql (ARCHIVED)
--- Superseded by sql/09_model_features.sql which enforces explicit observation and label windows, handles purchases during observation, short sessions, and dataset-boundary sessions.
--- Use sql/09_model_features.sql as the canonical feature-generation query.
--- This archived file is preserved for reference and should not be used for modeling pipelines.
