@@ -71,7 +71,7 @@ google-store-funnel-analysis/
 │   └── processed/                  <- Place processed CSVs / query outputs here (gitignored)
 ├── dashboard/                      <- Dashboard plan and assets
 ├── images/                         <- Images used in README / reports
-└── reports/                         <- Exported reports and slides (placeholders)
+└── reports/                        <- Exported reports and slides (placeholders)
 
 ---
 
@@ -135,6 +135,5 @@ Placeholder sections for final report. Do not fabricate results — populate the
 
 ## Contact
 
-Author: (Your name) — add contact and portfolio links here
+Author: Jason Valade / www.linkedin.com/in/jason-valade
 
-License: Use for portfolio/demo purposes only; do not upload private credentials.
