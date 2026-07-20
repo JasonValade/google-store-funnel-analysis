@@ -47,6 +47,12 @@ Limitations
 - pandas, numpy, matplotlib, seaborn, scipy, statsmodels, scikit-learn, jupyter
 - Optional: Looker Studio / Tableau / Power BI for dashboarding
 
+Notes on BigQuery access and billing
+
+- BigQuery can be used in several modes. A billing-enabled Google Cloud project is required to run queries that create tables or run jobs that exceed the free limits.
+- BigQuery Sandbox: Google offers a free BigQuery Sandbox tier that lets you query many public datasets (including `bigquery-public-data`) without a credit card, subject to free quotas and limits. Sandbox is suitable for exploration and small analyses. Check https://cloud.google.com/bigquery/docs/sandbox for limits and eligibility.
+- Recommended permissions for analysis tasks: the minimal role required to run queries is `roles/bigquery.jobUser` (BigQuery Job User). Do NOT grant broad editor permissions by default. `BigQuery Data Editor` (or equivalent) is only required if you will create or write tables into a project dataset.
+
 ---
 
 ## Repository structure
@@ -55,61 +61,73 @@ google-store-funnel-analysis/
 ├── README.md                       <- This file
 ├── requirements.txt                <- Python dependencies
 ├── .gitignore                      <- Files to ignore from git
-├── sql/                            <- Parameterized BigQuery SQL queries
+├── sql/                            <- Parameterized BigQuery SQL queries (canonical files: run in numeric order 00 → 10)
+│   ├── 00_schema_inspection.sql
 │   ├── 01_data_exploration.sql
 │   ├── 02_data_quality.sql
-│   ├── 03_conversion_funnel.sql
-│   ├── 04_device_analysis.sql
-│   ├── 05_traffic_source_analysis.sql
-│   ├── 06_product_analysis.sql
-│   └── 07_model_features.sql
+│   ├── 03_user_funnel.sql
+│   ├── 04_session_funnel.sql
+│   ├── 05_ordered_session_funnel.sql
+│   ├── 06_device_analysis.sql
+│   ├── 07_traffic_source_analysis.sql
+│   ├── 08_product_analysis.sql
+│   ├── 09_model_features.sql
+│   └── 10_dashboard_tables.sql
 ├── notebooks/                      <- Analysis and modeling notebooks (placeholders)
 │   ├── 01_statistical_analysis.ipynb
 │   └── 02_purchase_prediction.ipynb
 ├── data/
 │   ├── raw/                        <- Place raw exports here (gitignored)
-│   └── processed/                  <- Place processed CSVs / query outputs here (gitignored)
+│   └── processed/                  <- Place processed CSVs / query outputs here; small demo CSVs may be committed under data/processed/demo/
+├── docs/                           <- Metric definitions and data dictionary
 ├── dashboard/                      <- Dashboard plan and assets
 ├── images/                         <- Images used in README / reports
 └── reports/                        <- Exported reports and slides (placeholders)
 
 ---
 
-## Metric definitions
+## Metric definitions (summary)
 
 - User: Identified by user_pseudo_id in GA4 export
 - Event: A GA4 event (e.g., view_item, add_to_cart, begin_checkout, purchase)
+- Session: Identified by the GA4 session identifier (ga_session_id) when available; session_id here is defined as CONCAT(user_pseudo_id, '_', ga_session_id)
+- Transaction / Purchase: A completed purchase event (event_name = 'purchase'); transaction revenue may appear on the event or within items — inspect schema to confirm
 - Funnel stages: view_item -> add_to_cart -> begin_checkout -> purchase
-- Conversion rate (stage A -> B): users who reached B divided by users who reached A
+- Conversion rate (stage A -> B): SAFE_DIVIDE(count_reached_B, count_reached_A)
 - Drop-off rate: 1 - conversion rate
-- Revenue: extracted from purchase events (see product queries for extraction logic)
+- Revenue: explicitly defined as either ITEM revenue (SUM(item.price * item.quantity) for purchase events) or TRANSACTION revenue (as reported on purchase events). Confirm which field is present before using transaction revenue.
+- Traffic source: Top-level traffic_source fields commonly reflect first-user acquisition (the source/medium that brought the user). See docs/metric_definitions.md and run sql/00_schema_inspection.sql to check whether session-level campaign parameters or a collected_traffic_source field exist before interpreting these as session attribution.
 
 ---
 
 ## Methodology
 
-1. Use the provided BigQuery SQL files to explore data, surface quality issues, and build a user-level funnel and aggregated tables.
-2. Export processed query results (user-level funnel, product aggregates, modeling features) to CSV files in `data/processed/`.
-3. Use the statistical notebook to compare device conversion rates and run hypothesis tests.
-4. Use the modeling notebook to train and evaluate interpretable logistic regression models.
-5. Use dashboard plan to create visualizations in Looker Studio / Tableau / Power BI.
+1. Run `sql/00_schema_inspection.sql` to inspect schema, event_param keys, and item fields in this dataset. Adapt subsequent queries based on what you find.
+2. Run data-exploration and data-quality queries (sql/01_data_exploration.sql and sql/02_data_quality.sql) over a small date window to validate event names and nested schemas.
+3. Build the user-level funnel (sql/03_user_funnel.sql) and validate counts. This is the primary gating step before any modeling.
+4. Build session-level funnels (sql/04_session_funnel.sql) and ordered session funnels (sql/05_ordered_session_funnel.sql) to analyze within-session behavior and verify event ordering.
+5. Produce product and channel aggregates and export validated, small aggregated CSVs (if publishing demo results) under data/processed/demo/.
+6. After funnel validation, create model features (sql/07_model_features.sql) using an explicit prediction moment and observation window. Do NOT include features observed after the prediction cutoff.
 
 ---
 
 ## Running the SQL and notebooks
 
-1. Create or select a Google Cloud project with billing enabled and BigQuery API activated (instructions below).
-2. Open the public dataset in BigQuery and preview the tables (instructions below).
-3. Copy the SQL files into the BigQuery console's query editor or run them via `bq` or client libraries. Each SQL file includes a header with recommended _TABLE_SUFFIX filters.
-4. Save query outputs that are required for later steps as CSV or as a BigQuery table in your project. Recommended outputs to save in `data/processed/`:
-   - user_funnel.csv (from 03_conversion_funnel.sql)
-   - funnel_by_device.csv (from 04_device_analysis.sql)
-   - funnel_by_traffic.csv (from 05_traffic_source_analysis.sql)
-   - product_metrics.csv (from 06_product_analysis.sql)
-   - model_features.csv (from 07_model_features.sql)
-5. Open the notebooks in Jupyter / Colab. Update paths to point to the CSVs exported above. Notebooks contain placeholders where real outputs are required.
+1. If you have a billing-enabled Google Cloud project, you can run queries that create tables or export results. If you prefer not to attach billing, try BigQuery Sandbox for exploratory queries on public datasets (subject to Sandbox limits).
+2. Open the public dataset in BigQuery and preview the tables (instructions in README below).
+3. Run `sql/00_schema_inspection.sql` first to identify available event_params keys and item fields. Use that to adapt revenue and session extraction logic in later queries.
+4. Run the exploration and data-quality queries (01 and 02) on a small date range (e.g., one week) to preview costs and schema.
+5. Run the user-level and session-level funnel queries (03_user_funnel.sql, 04_session_funnel.sql, 05_ordered_session_funnel.sql). Save outputs that will be used in notebooks under `data/processed/` or as BigQuery tables in your own project. Recommended outputs to save:
+   - data/processed/user_funnel.csv (from sql/03_user_funnel.sql)
+   - data/processed/session_funnel.csv (from sql/04_session_funnel.sql)
+   - data/processed/ordered_session_funnel.csv (from sql/05_ordered_session_funnel.sql)
+   - data/processed/funnel_by_device.csv (from sql/04_device_analysis.sql)
+   - data/processed/funnel_by_traffic.csv (from sql/05_traffic_source_analysis.sql)
+   - data/processed/product_metrics.csv (from sql/06_product_analysis.sql)
+   - data/processed/model_features.csv (from sql/07_model_features.sql) — only after funnel validation and explicit feature-cutoff choices
+6. Update notebook file paths to point to these CSVs. Each notebook explains how the input file is generated.
 
-Important: Do not commit exported datasets or credentials to this repository.
+Important: Do not commit credentials, service-account files, or sensitive exports. Small, aggregated, non-sensitive demo CSVs may be committed to data/processed/demo/ for portfolio demonstration.
 
 ---
 

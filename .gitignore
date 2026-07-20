@@ -13,8 +13,11 @@ venv/
 
 # Data
 /data/raw/
+# Ignore processed exports by default. Allow small, non-sensitive demo CSVs in data/processed/demo/ to be committed for portfolio purposes.
 /data/processed/
-*.csv
+data/processed/*
+!data/processed/demo/
+!data/processed/demo/*.csv
 *.parquet
 
 # OS files

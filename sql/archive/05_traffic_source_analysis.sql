@@ -1,0 +1,4 @@
+-- 05_traffic_source_analysis.sql (ARCHIVED)
+-- This file has been superseded by sql/07_traffic_source_analysis.sql which performs a session-level analysis
+-- Use sql/07_traffic_source_analysis.sql (unit: sessions) as the canonical traffic-source analysis for website performance.
+-- This archived file is preserved for reference and should not be used for the primary dashboard.

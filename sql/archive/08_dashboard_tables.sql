@@ -1,0 +1,4 @@
+-- 08_dashboard_tables.sql (ARCHIVED)
+-- Superseded by sql/10_dashboard_tables.sql which provides canonical dashboard templates (00..10 sequencing).
+-- For dashboard-ready tables and recommended templates, use sql/10_dashboard_tables.sql.
+-- This archived file is preserved for reference and should not be used for new dashboards.

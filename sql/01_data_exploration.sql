@@ -1,12 +1,13 @@
 -- 01_data_exploration.sql
--- Purpose: Explore event types, counts, distinct users, and dataset date range
--- Recommended: set _TABLE_SUFFIX range to limit scanned tables
+-- Purpose: Event-level exploration: list event types, counts, distinct users, and per-table row counts.
+-- Unit of analysis: events (use event counts and distinct users where noted).
+-- Recommendation: run on a small date window first using _TABLE_SUFFIX to control cost.
 
 -- Parameters (adjust before running):
 --   start_date = '20201101'
 --   end_date   = '20210131'
 
--- 1) List event types with total event counts and distinct users
+-- 1) List event types with total event counts and distinct users (events unit, distinct users reported)
 SELECT
   event_name,
   COUNT(1) AS total_events,
@@ -20,7 +21,7 @@ GROUP BY
 ORDER BY
   total_events DESC;
 
--- 2) Dataset date range and total record count (per-day summary)
+-- 2) Dataset date range and total record count (per-day summary; events unit)
 SELECT
   _TABLE_SUFFIX AS table_date,
   COUNT(1) AS rows
