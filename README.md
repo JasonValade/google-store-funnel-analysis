@@ -61,7 +61,7 @@ google-store-funnel-analysis/
 ├── README.md                       <- This file
 ├── requirements.txt                <- Python dependencies
 ├── .gitignore                      <- Files to ignore from git
-├── sql/                            <- Parameterized BigQuery SQL queries (canonical files: run in numeric order 00 → 10)
+├── sql/                            <- Parameterized BigQuery SQL queries (canonical files: run in numeric order 00 → 11)
 │   ├── 00_schema_inspection.sql
 │   ├── 01_data_exploration.sql
 │   ├── 02_data_quality.sql
@@ -72,7 +72,9 @@ google-store-funnel-analysis/
 │   ├── 07_traffic_source_analysis.sql
 │   ├── 08_product_analysis.sql
 │   ├── 09_model_features.sql
-│   └── 10_dashboard_tables.sql
+│   ├── 10_dashboard_tables.sql
+│   ├── 11_weekly_conversion_trend.sql
+│   └── archive/                    <- Obsolete/prior versions (do not use for analysis)
 ├── notebooks/                      <- Analysis and modeling notebooks (placeholders)
 │   ├── 01_statistical_analysis.ipynb
 │   └── 02_purchase_prediction.ipynb
@@ -107,7 +109,9 @@ google-store-funnel-analysis/
 3. Build the user-level funnel (sql/03_user_funnel.sql) and validate counts. This is the primary gating step before any modeling.
 4. Build session-level funnels (sql/04_session_funnel.sql) and ordered session funnels (sql/05_ordered_session_funnel.sql) to analyze within-session behavior and verify event ordering.
 5. Produce product and channel aggregates and export validated, small aggregated CSVs (if publishing demo results) under data/processed/demo/.
-6. After funnel validation, create model features (sql/07_model_features.sql) using an explicit prediction moment and observation window. Do NOT include features observed after the prediction cutoff.
+6. After funnel validation, create model features (sql/09_model_features.sql) using an explicit prediction moment and observation window. Do NOT include features observed after the prediction cutoff.
+7. Run product analysis (sql/08_product_analysis.sql) to identify high-traffic, low-conversion opportunities. Review data-quality notes in that query.
+8. Run weekly conversion trend analysis (sql/11_weekly_conversion_trend.sql) to observe seasonal or temporal patterns. Document findings with appropriate caveats about partial weeks and observational limits.
 
 ---
 
@@ -127,6 +131,13 @@ google-store-funnel-analysis/
    - data/processed/model_features.csv (from sql/07_model_features.sql) — only after funnel validation and explicit feature-cutoff choices
 6. Update notebook file paths to point to these CSVs. Each notebook explains how the input file is generated.
 
+**Validated SQL queries (executed successfully in BigQuery)**:
+- `sql/08_product_analysis.sql` — Product opportunity analysis with revenue and opportunity rankings (validated)
+- `sql/11_weekly_conversion_trend.sql` — Weekly session-level funnel analysis (validated)
+
+**Other SQL queries** (syntax validated but not yet executed in this environment):
+- sql/00 through sql/07, sql/09_model_features.sql, sql/10_dashboard_tables.sql
+
 Important: Do not commit credentials, service-account files, or sensitive exports. Small, aggregated, non-sensitive demo CSVs may be committed to data/processed/demo/ for portfolio demonstration.
 
 ---
@@ -139,7 +150,87 @@ See `dashboard/README.md` for a step-by-step plan to create a dashboard in Looke
 
 ## Findings, visualizations, recommendations
 
-Placeholder sections for final report. Do not fabricate results — populate these after running the queries and notebooks.
+**Status**: The product opportunity analysis and weekly conversion trend analysis have been documented with validated findings below. Dashboard development, final business recommendations, and optional predictive modeling remain unfinished.
+
+
+### Product Analysis Data Quality
+
+This project uses normalized product names (LOWER(TRIM(item.item_name))) as the product-analysis key for the following reasons:
+
+- **Item ID reliability**: Item IDs alone were not reliable for joining product views and purchases. Purchase events contained 810 distinct item IDs, while view_item events contained only 427.
+- **Normalized name consistency**: Normalized product names were substantially more consistent across event types:
+  - 388 normalized product names appeared in both view_item and purchase events
+  - 34 appeared only in view_item events
+  - 8 appeared only in purchase events
+  - Matching product names covered 93.55% of product-view sessions and 96.19% of purchase sessions
+- **Key selection**: Therefore, normalized product names were selected as the product-analysis key.
+
+**Important caveat**: Products with zero purchases must be treated as **investigation candidates**, not automatically as poorly designed product pages. Possible explanations include unavailable products, discontinued items, catalog changes, data obfuscation, or tracking issues.
+
+### Product Opportunity Findings
+
+Query: `sql/08_product_analysis.sql`  
+Unit of analysis: sessions (product-view sessions and purchase sessions are counted as distinct sessions)  
+Minimum threshold: 1,000 product-view sessions  
+Analysis period: 2020-11-01 through 2021-01-31  
+
+**Top revenue products**:
+- Google Zip Hoodie F/C: $13,788 item revenue
+- Google Crewneck Sweatshirt Navy: $10,714 item revenue
+- Google Men's Tech Fleece Grey: $9,965 item revenue
+
+**High-traffic, low-conversion candidates**:
+- Several apparel products had purchase rates of 1–2%, making them candidates for investigation into product pages, pricing, availability, or customer experience barriers.
+- Google Canteen Bottle Black maintained a 4.48% product purchase rate, indicating stronger conversion in the accessories category.
+
+**Investigation status categories**:
+- **"Investigate availability or tracking"**: Products with zero purchases. These may indicate catalog changes, discontinued items, or potential tracking problems.
+- **"High-traffic, low-conversion candidate"**: Products with purchase rates below 1% despite traffic above 1,000 sessions.
+- **"Monitor"**: Products with purchase rates ≥1%.
+
+**Important interpretation**: These observational conversion rates describe traffic patterns and potential opportunities, not proof of product page quality or design effectiveness. Improving conversion rates would require targeted A/B testing and controlled experiments.
+
+### Weekly Conversion Trend
+
+Query: `sql/11_weekly_conversion_trend.sql`  
+Unit of analysis: sessions (ordered session-level funnel)  
+Funnel stages: view_item (earliest) → begin_checkout (at or after view_item) → purchase (at or after begin_checkout)  
+Week assignment: DATE_TRUNC(view_date, WEEK(MONDAY)) based on earliest product-view date in each session  
+Analysis period: 2020-11-01 through 2021-01-31  
+
+**Observed trends**:
+- Purchase conversion increased through November, peaking at **8.93%** during the week beginning 2020-12-07.
+- Following the peak, conversion declined:
+  - 7.39% for the week beginning 2020-12-14
+  - 5.44% for the week beginning 2020-12-21
+  - 4.24% for the week beginning 2020-12-28
+  - 3.56% for the week beginning 2021-01-04
+- The decline was primarily associated with fewer product-view sessions progressing to checkout (a decrease in the view-to-checkout rate).
+
+**Limitations and caveats**:
+- The week beginning 2020-10-26 is a **partial week** (contains only November 1 onward, as the dataset begins on a Sunday) and should be excluded from trend analysis and visualizations.
+- Weekly trends are **descriptive** and based on observational data. They do not establish causation.
+- The final week in the dataset (beginning 2021-01-25) may be incomplete if sessions are ongoing at the dataset boundary.
+
+---
+
+## Limitations and Non-Causal Interpretation
+
+**Observational data**: This analysis is based on observational GA4 data, not controlled experiments. Observed differences in conversion rates, traffic patterns, or product performance do not establish causation.
+
+**Statistical vs. practical significance**: Statistical tests in the notebooks (e.g., z-tests for device comparison) identify whether observed differences are likely real; they do not confirm that causation exists or that the difference is actionable.
+
+**Product conversion rates**: Differences in product purchase rates may reflect product quality, pricing, availability, customer perception, or tracking issues. Low conversion does not automatically indicate a poor product page; further investigation is required.
+
+**Session attribution**: This analysis uses session-level ordering (view_item → begin_checkout → purchase) to construct the funnel. Session-level conversion rates reflect the proportion of product-view sessions that result in purchases within that session, not user-level lifetime value or long-term customer behavior.
+
+**Seasonal and external factors**: Weekly conversion trends may be influenced by external factors (holiday shopping, marketing campaigns, competitive activity, stock availability) not captured in this GA4 dataset.
+
+**Next steps**: To improve conversion rates or understand causal drivers, consider:
+- A/B testing hypothesized improvements (checkout flow, product pages, pricing strategies)
+- Qualitative research (user interviews, session replay) to understand abandonment reasons
+- Cohort analysis to understand user segments and their behaviors
+- Causal inference methods (propensity matching, instrumental variables) if confounders can be controlled
 
 ---
 

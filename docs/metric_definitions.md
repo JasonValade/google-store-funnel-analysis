@@ -45,10 +45,23 @@ Traffic source
 - Attribution scope: Do NOT assume these fields represent session-level attribution. Before interpreting them as session attribution, check for session-level campaign parameters or a collected_traffic_source field in event_params or other session attributes using `sql/00_schema_inspection.sql`.
 - Guidance: Inspect event_param keys and traffic_source fields using `sql/00_schema_inspection.sql`. If session-level campaign parameters are present and populated per session, document that you will use session-level attribution; otherwise, default to first-user acquisition semantics and state that choice in any report.
 
-Analysis period
-- Definition: The date range used for each query, controlled via the _TABLE_SUFFIX filter on wildcard tables (e.g., _TABLE_SUFFIX BETWEEN '20201101' AND '20210131'). Always include the analysis period in any report.
+## Product Analysis
 
-Units and clarity
-- Always state the unit of analysis (user, session, event, or transaction) when reporting counts, rates, or revenue.
-- Use SAFE_DIVIDE and NULLIF in SQL to avoid division-by-zero errors.
+### Product-level aggregation methodology
+
+- **Unit of analysis**: Sessions. Product-view sessions and purchase sessions are counted as distinct sessions using CONCAT(user_pseudo_id, '_', ga_session_id) as the session identifier.
+- **Product key**: Normalized product names (LOWER(TRIM(item.item_name))) are used to match product views with purchases because:
+  - Item IDs alone were unreliable (810 distinct item IDs in purchase events vs. 427 in view_item events)
+  - Normalized names covered 93.55% of product-view sessions and 96.19% of purchase sessions
+  - 388 normalized names appeared in both event types; 34 appeared only in views; 8 appeared only in purchases
+- **Revenue calculation**: Prefer item.item_revenue when available. Fallback: item.price * item.quantity. Do not mix item-level and transaction-level revenue.
+- **Minimum threshold**: Products must have ≥1,000 product-view sessions to reduce noise from low-traffic items.
+
+### Opportunity status field
+
+- **"Investigate availability or tracking"**: Products with zero purchases. Possible causes include unavailable items, discontinued SKUs, catalog changes, data obfuscation, or tracking problems. Not automatically proof of poor product design.
+- **"High-traffic, low-conversion candidate"**: Products with purchase rate < 1% and ≥1,000 views. Candidates for further investigation (A/B testing, UX review, qualitative research).
+- **"Monitor"**: Products with purchase rate ≥1%. Performing at acceptable baseline for the store.
+
+---
 
