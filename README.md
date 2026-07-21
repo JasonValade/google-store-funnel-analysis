@@ -33,6 +33,14 @@ This project analyzes the public Google Analytics 4 (GA4) e-commerce export from
 - Two other event-volume drops — `view_item` on December 19 and `add_to_cart` on January 31 — were classified as `LIKELY_TRAFFIC_DECLINE` because their traffic-adjusted event ratios were 0.860 and 0.903, consistent with site-wide page-view declines rather than event-specific failures.
 - This is an offline monitoring prototype built for portfolio demonstration. It is not a deployed production alerting service.
 
+**V3 — Purchase-propensity model:**
+- Built a leakage-safe session-level purchase-propensity model on **77,020 product-view sessions** (November 2020 – January 2021).
+- Prediction occurs immediately after the session's first `view_item` event; the target is whether a `purchase` event occurs later in that same session.
+- Chronological test-set **PR-AUC: 0.1402** versus a 0.0504 no-skill baseline — a 2.8× improvement.
+- Highest-risk scoring decile achieved **3.13× lift** and captured **31.2% of purchases**.
+- Sigmoid calibration on validation data reduced test Brier score from 0.1778 to **0.0457**, substantially improving probability reliability.
+- The model identifies propensity and associations between early-session signals and purchase. It does **not** establish causal effects; controlled experiments are required before taking conversion interventions.
+
 ---
 
 ## Project overview
@@ -51,7 +59,7 @@ Online retailers lose revenue when sessions exit the funnel before purchasing. U
 - Do mobile sessions convert at a meaningfully different rate than desktop sessions?
 - Which traffic sources and mediums drive the highest conversion?
 - Which products have high traffic but low purchase conversion?
-- *(Planned)* Can an interpretable model predict the probability of purchase from early-session signals?
+- Can an interpretable model predict the probability of purchase from early-session signals? *(Completed — see V3 findings below.)*
 
 ---
 
@@ -85,7 +93,7 @@ google-store-funnel-analysis/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
-├── sql/                            ← BigQuery queries — run in order 00 → 12
+├── sql/                            ← BigQuery queries — run in order 00 → 13
 │   ├── 00_schema_inspection.sql
 │   ├── 01_data_exploration.sql
 │   ├── 02_data_quality.sql
@@ -95,25 +103,30 @@ google-store-funnel-analysis/
 │   ├── 06_device_analysis.sql
 │   ├── 07_traffic_source_analysis.sql
 │   ├── 08_product_analysis.sql
-│   ├── 09_model_features.sql
+│   ├── 09_model_features.sql           ← Leakage-safe session features (V3) ✓
 │   ├── 10_dashboard_tables.sql
 │   ├── 11_weekly_conversion_trend.sql
-│   └── 12_tracking_health_monitor.sql
+│   ├── 12_tracking_health_monitor.sql
+│   └── 13_model_feature_validation.sql ← Feature validation checks (V3) ✓
 ├── notebooks/
 │   ├── 01_statistical_analysis.ipynb   ← Mobile vs desktop z-test; weekly trend chart
 │   ├── 02_tracking_health_monitor.ipynb ← Tracking-health alert classifier (V2)
-│   └── 02_purchase_prediction.ipynb    ← Purchase prediction (planned)
+│   └── 03_purchase_prediction.ipynb    ← Purchase-propensity model (V3) ✓
 ├── data/
 │   ├── raw/                            ← gitignored
 │   └── processed/
 │       └── demo/                       ← Small aggregated CSVs safe to commit
-│           └── tracking_alerts.csv     ← Six-row alert demo dataset
+│           ├── tracking_alerts.csv     ← Six-row alert demo dataset
+│           └── model_features.csv.gz   ← 77,020-row leakage-safe feature extract (V3)
 ├── docs/
 │   ├── metric_definitions.md
 │   └── data_dictionary.md
 ├── dashboard/                          ← Dashboard plan (implementation planned)
 ├── images/                             ← Charts used in this README
-│   └── tracking_health_alerts.png      ← V2 tracking-health visualization
+│   ├── tracking_health_alerts.png      ← V2 tracking-health visualization
+│   ├── model_precision_recall.png      ← V3 precision-recall curves (validation)
+│   ├── model_decile_lift.png           ← V3 purchase rate by predicted-risk decile
+│   └── model_calibration.png          ← V3 Random Forest probability calibration
 └── reports/
 ```
 
@@ -147,9 +160,10 @@ Full definitions: [`docs/metric_definitions.md`](docs/metric_definitions.md)
 5. **Device and traffic-source analysis** (`sql/06–07`) — compare conversion rates across segments.
 6. **Product analysis** (`sql/08`) — revenue ranking and opportunity ranking. Uses normalized product names because item IDs were inconsistent across event types.
 7. **Weekly conversion trend** (`sql/11`) — session-level funnel aggregated by week.
-8. **Model features** (`sql/09`) — session-level features with explicit observation and label windows to prevent data leakage. *(Modeling notebook is planned, not yet complete.)*
+8. **Model features** (`sql/09`) — leakage-safe session-level feature extraction for purchase-propensity modeling. One row per `view_item` session; prediction moment is the first `view_item` timestamp; all features are derived from data at or before that moment. Executed and validated in BigQuery.
+9. **Model feature validation** (`sql/13`) — materializes the feature query into a temporary table and runs nine validation result sets (duplicate checks, target distribution, monthly breakdown, numerical range checks, missing-value counts). Executed and validated in BigQuery.
 
-**Validated queries (executed in BigQuery):** `sql/08_product_analysis.sql`, `sql/11_weekly_conversion_trend.sql`
+**Validated queries (executed in BigQuery):** `sql/08_product_analysis.sql`, `sql/09_model_features.sql`, `sql/11_weekly_conversion_trend.sql`, `sql/12_tracking_health_monitor.sql`, `sql/13_model_feature_validation.sql`
 **Other queries:** syntax reviewed; not yet executed in this environment.
 
 ---
@@ -248,6 +262,70 @@ Query: [`sql/12_tracking_health_monitor.sql`](sql/12_tracking_health_monitor.sql
 
 ---
 
+### Purchase propensity modeling
+
+A leakage-safe session-level model estimates the probability that a visitor will purchase later in the same session, based solely on signals available immediately after their first product view.
+
+**Chronological splits:**
+
+| Split | Dates | Sessions | Purchases | Purchase rate |
+|---|---|---|---|---|
+| Train | Nov 1 – Dec 31, 2020 | 53,917 | 3,618 | 6.71% |
+| Validation | Jan 1 – 15, 2021 | 9,445 | 382 | 4.04% |
+| Test | Jan 16 – 31, 2021 | 13,658 | 688 | 5.04% |
+
+The declining purchase rate from November through January reflects temporal conversion drift, not a modeling artifact.
+
+**Model selection:** Three models were evaluated on validation PR-AUC (the primary metric, chosen because purchases are rare at ~6% of sessions). Random Forest was selected narrowly over logistic regression; the margin was small and neither model is decisively superior.
+
+| Model | Val PR-AUC | Val ROC-AUC |
+|---|---|---|
+| Dummy (no-skill baseline) | 0.0404 | 0.5000 |
+| Logistic regression | 0.0980 | 0.7490 |
+| Random Forest | 0.0997 | 0.7524 |
+
+**Calibration:** Class weighting (`class_weight="balanced_subsample"`) improved recall on the minority class but distorted raw probability estimates. A sigmoid calibration layer was fitted on validation data only, reducing the Brier score from 0.1778 (uncalibrated) to 0.0457 (calibrated) on the test set.
+
+**Final test results (Random Forest, sigmoid calibrated):**
+
+| Metric | Value |
+|---|---|
+| Test prevalence | 5.04% |
+| No-skill PR-AUC | 0.0504 |
+| **PR-AUC** | **0.1402** |
+| ROC-AUC | 0.7876 |
+| Calibrated Brier score | 0.0457 |
+| Precision (thr = 0.089) | 0.1578 |
+| Recall (thr = 0.089) | 0.3183 |
+| F1 (thr = 0.089) | 0.2110 |
+| Top-decile lift | 3.13× |
+| Top-decile purchase capture | 31.2% |
+
+The classification threshold (0.0892) was selected by maximising F1 on calibrated validation probabilities. The test set was not used for threshold selection.
+
+![Purchase model precision-recall curves](images/model_precision_recall.png)
+
+![Purchase rate by predicted-risk decile](images/model_decile_lift.png)
+
+![Random Forest probability calibration](images/model_calibration.png)
+
+Notebook: [`notebooks/03_purchase_prediction.ipynb`](notebooks/03_purchase_prediction.ipynb)
+
+Queries: [`sql/09_model_features.sql`](sql/09_model_features.sql) · [`sql/13_model_feature_validation.sql`](sql/13_model_feature_validation.sql)
+
+#### Leakage prevention
+
+Preventing data leakage was a primary design constraint:
+
+- **One row per product-view session.** The unit of observation is a GA4 session that contains at least one `view_item` event.
+- **Prediction timestamp.** The prediction moment is the first `view_item` event in the session. All features use only data available at or before that timestamp.
+- **Excluded fields.** `add_to_cart`, `begin_checkout`, `purchase` event counts, transaction IDs, revenue, ecommerce totals, and any post-view event counts are excluded from features.
+- **Chronological splitting.** Train, validation, and test sets are defined by non-overlapping calendar periods, not random shuffles. Future sessions cannot influence past-period model training.
+- **Preprocessing fitted on training data only.** Imputers, encoders, and scalers are all wrapped in sklearn `Pipeline` / `ColumnTransformer` objects and fitted exclusively on the training split.
+- **Calibration and threshold fitted on validation only.** The sigmoid calibration layer and the F1-maximising threshold were both selected using validation data. The test set was excluded from all fitting and selection steps.
+
+---
+
 ## Business recommendations
 
 These are hypotheses for investigation and controlled testing. Observational data cannot establish causation.
@@ -275,6 +353,15 @@ Add automated alerts that fire when a key event (e.g., `add_to_cart`) drops to n
 - **Normalized product names.** Item IDs were inconsistent across event types, requiring normalization. A small share of products (34 view-only, 8 purchase-only after normalization) could not be matched across event types.
 - **Observational data only.** All conversion rates and comparisons are observational. Differences between devices, channels, and products do not establish cause-and-effect relationships. Improving conversion requires controlled experiments.
 - **Borderline device result.** The mobile vs. desktop statistical test was borderline at the 95% level and the difference was small (~0.35 pp). This should be replicated on a larger sample before informing device-specific investments.
+- **V3 model limitations:**
+  - *Short time window.* Only three months of data are available. Seasonal and holiday effects are entangled with structural trends; the November purchase rate (6.12%) differed from December (7.26%) and January (4.63%).
+  - *Temporal conversion drift.* Purchase rates varied materially across months. The model was trained on a period with higher purchase rates than the test period; this drift will continue in production.
+  - *Obfuscated GA4 data.* Item names, IDs, and other fields have been obfuscated. Feature patterns may not transfer directly to a live property.
+  - *Incomplete item metadata.* 20,697 sessions (26.9%) lack complete item metadata (price, name, or category). A `item_metadata_missing` indicator is included as a feature.
+  - *First-user acquisition, not session attribution.* `acquisition_source` and `acquisition_medium` reflect how the user was originally acquired, not the source of the specific session. Treat channel insights accordingly.
+  - *Class imbalance.* Purchases represent ~6% of sessions. Precision is inherently limited; the model is designed for ranking and triage, not high-confidence individual predictions.
+  - *Calibration and thresholds require monitoring.* The sigmoid calibration layer and the 0.0892 threshold were optimised for this dataset and period. Both should be recalibrated as traffic patterns, product mix, and purchase rates change.
+  - *Propensity is not causality.* The model estimates statistical associations between early-session signals and purchase. It does not establish causal effects. Controlled experiments are required before attributing conversion changes to any intervention informed by model scores.
 
 ---
 
@@ -309,10 +396,11 @@ jupyter notebook notebooks/
 | `sql/06_device_analysis.sql` | Conversion by device category |
 | `sql/07_traffic_source_analysis.sql` | Conversion by first-user acquisition source |
 | `sql/08_product_analysis.sql` | Revenue ranking and opportunity ranking ✓ |
-| `sql/09_model_features.sql` | Session features for purchase prediction (planned) |
+| `sql/09_model_features.sql` | Leakage-safe session features for purchase-propensity model ✓ |
 | `sql/10_dashboard_tables.sql` | Dashboard summary tables |
 | `sql/11_weekly_conversion_trend.sql` | Weekly session-level funnel ✓ |
 | `sql/12_tracking_health_monitor.sql` | Rolling baseline alert classifier ✓ |
+| `sql/13_model_feature_validation.sql` | Feature validation checks (duplicate, target, range, missing) ✓ |
 
 ✓ = Executed and validated in BigQuery. All other queries have been syntax-reviewed but not yet run.
 
@@ -323,6 +411,8 @@ jupyter notebook notebooks/
 - `funnel_by_traffic.csv` — from `sql/07`
 - `product_metrics.csv` — from `sql/08`
 - `weekly_conversion.csv` — from `sql/11`
+
+**Running notebook 03 (`notebooks/03_purchase_prediction.ipynb`):** The notebook reads `data/processed/demo/model_features.csv.gz` directly using pandas — no BigQuery connection or CSV export is required. The notebook resolves the path relative to the repository root regardless of whether it is launched from the `notebooks/` directory or the project root. All three chart files (`images/model_precision_recall.png`, `images/model_decile_lift.png`, `images/model_calibration.png`) are saved automatically when cells execute.
 
 Small, aggregated, non-sensitive demo CSVs may be committed to `data/processed/demo/`. Do not commit credentials, service-account files, or raw exports.
 
@@ -336,10 +426,11 @@ A Looker Studio / Tableau / Power BI dashboard is **planned** and not yet built.
 
 ## Future work
 
-- **Dashboard (v2):** Build the planned Looker Studio or Tableau dashboard with funnel visualization, device comparison, channel performance, and weekly trend.
-- **Purchase prediction model (v2):** Complete `notebooks/02_purchase_prediction.ipynb` — logistic regression on early-session signals with explicit observation/label windows to prevent leakage.
-- **Tracking-health monitor (completed offline prototype):** Hybrid rule-based alert classifier implemented in `notebooks/02_tracking_health_monitor.ipynb`. Detected all four validated add-to-cart outage dates and separated two traffic-decline alerts from instrumentation failures. Future production improvements: scheduled BigQuery execution, automated Slack/email alert delivery, and ongoing threshold calibration as traffic patterns evolve.
-- **Causal analysis:** Uplift modeling or A/B test design to move beyond observational findings.
+- **Dashboard (next planned version):** Build the planned Looker Studio or Tableau dashboard with funnel visualization, device comparison, channel performance, weekly trend, and propensity-score distribution panels.
+- **Purchase-propensity model (V3 — completed):** Leakage-safe session-level Random Forest model with sigmoid calibration. Implemented in `notebooks/03_purchase_prediction.ipynb`. Chronological test PR-AUC 0.1402; top-decile lift 3.13×; calibrated Brier 0.0457. No model artifact or deployed prediction service exists.
+- **Tracking-health monitor (V2 — completed offline prototype):** Hybrid rule-based alert classifier in `notebooks/02_tracking_health_monitor.ipynb`. Detected all four validated add-to-cart outage dates. Future production improvements: scheduled BigQuery execution, automated Slack/email alert delivery, and ongoing threshold calibration as traffic patterns evolve.
+- **Production monitoring and model drift:** Scheduled BigQuery feature refresh, monitoring for purchase-rate drift, periodic recalibration of the sigmoid layer, and threshold review as traffic patterns shift.
+- **Causal analysis:** Uplift modeling or A/B test design to move beyond observational propensity scores to actionable causal estimates.
 - **Extended time range:** Replicate analysis on a longer dataset to separate seasonal effects from structural conversion trends.
 
 ---
