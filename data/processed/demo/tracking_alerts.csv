@@ -1,0 +1,7 @@
+date,event_name,event_count,expected_event_count,event_volume_ratio,event_volume_z_score,page_view_count,expected_page_view_count,page_view_ratio,traffic_adjusted_event_ratio,tracking_status
+2020-11-21,add_to_cart,0,206.14,0.0,-0.78,13278,15034.29,0.883,0.0,CRITICAL_TRACKING_OUTAGE
+2020-11-22,add_to_cart,0,206.14,0.0,-0.78,11497,15397.29,0.747,0.0,CRITICAL_TRACKING_OUTAGE
+2020-11-23,add_to_cart,0,206.14,0.0,-0.78,16358,15623.57,1.047,0.0,CRITICAL_TRACKING_OUTAGE
+2020-11-24,add_to_cart,0,194.0,0.0,-0.71,19352,15787.86,1.226,0.0,CRITICAL_TRACKING_OUTAGE
+2020-12-19,view_item,3113,6024.29,0.517,-3.13,10728,17848.14,0.601,0.86,LIKELY_TRAFFIC_DECLINE
+2021-01-31,add_to_cart,295,481.0,0.613,-3.06,9498,13986.14,0.679,0.903,LIKELY_TRAFFIC_DECLINE

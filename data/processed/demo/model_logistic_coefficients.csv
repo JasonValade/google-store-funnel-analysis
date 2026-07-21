@@ -1,0 +1,21 @@
+feature,coefficient,absolute_coefficient,direction
+cat__first_item_category_Women's,1.360869,1.360869,↑ higher purchase propensity
+cat__first_item_category_Home/Campus Collection/,1.050395,1.050395,↑ higher purchase propensity
+cat__first_item_category_Drinkware,0.99428,0.99428,↑ higher purchase propensity
+cat__first_item_category_Home/Apparel/Socks/,0.979085,0.979085,↑ higher purchase propensity
+cat__first_item_name_google incognito flap pack,0.957236,0.957236,↑ higher purchase propensity
+cat__first_item_category_Home/Stationery/Writing/,0.943734,0.943734,↑ higher purchase propensity
+cat__first_item_name_supernatural paper backpack,-0.917427,0.917427,↓ lower purchase propensity
+cat__first_item_name_google cambridge campus zip hoodie,-0.967689,0.967689,↓ lower purchase propensity
+cat__first_item_category_Home/Stationery/,-1.004786,1.004786,↓ lower purchase propensity
+cat__country_Croatia,-1.011165,1.011165,↓ lower purchase propensity
+cat__first_item_name_google pocket tee grey,-1.061539,1.061539,↓ lower purchase propensity
+cat__country_Romania,-1.071058,1.071058,↓ lower purchase propensity
+cat__first_item_category_Eco-Friendly,-1.279853,1.279853,↓ lower purchase propensity
+cat__country_Morocco,-1.339607,1.339607,↓ lower purchase propensity
+cat__country_Norway,-1.568364,1.568364,↓ lower purchase propensity
+cat__first_item_name_google tee blue,-1.7407,1.7407,↓ lower purchase propensity
+cat__first_item_category_Accessories/,-1.875956,1.875956,↓ lower purchase propensity
+cat__first_item_name_(unknown),-1.991847,1.991847,↓ lower purchase propensity
+cat__first_item_category_Backpacks/,-2.055909,2.055909,↓ lower purchase propensity
+cat__first_item_name_google mural sticker sheet,-2.125327,2.125327,↓ lower purchase propensity

@@ -10,3 +10,7 @@ notebook
 ipython
 google-cloud-bigquery  # optional: only if you plan to run queries programmatically
 pyyaml
+
+# V4 Dashboard
+streamlit>=1.35
+plotly>=5.18

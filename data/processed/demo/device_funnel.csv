@@ -1,0 +1,4 @@
+device_category,product_view_sessions,checkout_sessions,purchase_sessions,view_to_checkout_rate,checkout_to_purchase_rate,overall_purchase_rate
+mobile,30501,4329,1910,14.19,44.12,6.26
+desktop,44819,6206,2651,13.85,42.72,5.91
+tablet,1700,235,100,13.82,42.55,5.88

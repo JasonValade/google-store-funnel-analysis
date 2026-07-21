@@ -1,0 +1,4 @@
+model,pr_auc,roc_auc,brier_score,precision,recall,f1,top_decile_lift,top_decile_capture,threshold
+DummyClassifier,0.040445,0.5,0.03952,0.0,0.0,0.0,0.759564,0.075916,0.5
+LogisticRegression,0.098021,0.749046,0.183564,0.13191,0.274869,0.178268,3.064449,0.306283,0.722727
+RandomForest,0.099669,0.752352,0.201763,0.116848,0.337696,0.17362,2.854914,0.28534,0.613838

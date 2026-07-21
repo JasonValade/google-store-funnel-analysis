@@ -11,13 +11,14 @@ venv/
 # Jupyter
 .ipynb_checkpoints/
 
-# Data
-/data/raw/
-# Ignore processed exports by default. Allow small, non-sensitive demo CSVs in data/processed/demo/ to be committed for portfolio purposes.
-/data/processed/
-data/processed/*
-!data/processed/demo/
-!data/processed/demo/*.csv
+# Data — scoped rules allow only the non-sensitive demo artifacts
+/data/*
+!/data/processed/
+/data/processed/*
+!/data/processed/demo/
+/data/processed/demo/*
+!/data/processed/demo/*.csv
+!/data/processed/demo/*.csv.gz
 *.parquet
 
 # OS files
@@ -29,6 +30,8 @@ Thumbs.db
 *.key
 service-account-*.json
 credentials.json
+# Re-allow non-sensitive dashboard artifact JSON in demo folder (exception must follow *.json rule)
+!data/processed/demo/*.json
 
 # Other
 .vscode/
