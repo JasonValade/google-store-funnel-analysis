@@ -28,6 +28,11 @@ This project analyzes the public Google Analytics 4 (GA4) e-commerce export from
 - Weekly purchase conversion peaked at **8.93%** during the week beginning December 7, then declined through January.
 - Mobile converted at 6.26% vs. 5.91% for desktop — the difference was borderline in statistical tests and small in practical terms.
 
+**V2 — Tracking health monitor:**
+- A hybrid GA4 tracking-health monitor detected all four manually validated `add_to_cart` outage dates (November 21–24, 2020).
+- Two other event-volume drops — `view_item` on December 19 and `add_to_cart` on January 31 — were classified as `LIKELY_TRAFFIC_DECLINE` because their traffic-adjusted event ratios were 0.860 and 0.903, consistent with site-wide page-view declines rather than event-specific failures.
+- This is an offline monitoring prototype built for portfolio demonstration. It is not a deployed production alerting service.
+
 ---
 
 ## Project overview
@@ -80,7 +85,7 @@ google-store-funnel-analysis/
 ├── README.md
 ├── requirements.txt
 ├── .gitignore
-├── sql/                            ← BigQuery queries — run in order 00 → 11
+├── sql/                            ← BigQuery queries — run in order 00 → 12
 │   ├── 00_schema_inspection.sql
 │   ├── 01_data_exploration.sql
 │   ├── 02_data_quality.sql
@@ -92,19 +97,23 @@ google-store-funnel-analysis/
 │   ├── 08_product_analysis.sql
 │   ├── 09_model_features.sql
 │   ├── 10_dashboard_tables.sql
-│   └── 11_weekly_conversion_trend.sql
+│   ├── 11_weekly_conversion_trend.sql
+│   └── 12_tracking_health_monitor.sql
 ├── notebooks/
 │   ├── 01_statistical_analysis.ipynb   ← Mobile vs desktop z-test; weekly trend chart
+│   ├── 02_tracking_health_monitor.ipynb ← Tracking-health alert classifier (V2)
 │   └── 02_purchase_prediction.ipynb    ← Purchase prediction (planned)
 ├── data/
 │   ├── raw/                            ← gitignored
 │   └── processed/
 │       └── demo/                       ← Small aggregated CSVs safe to commit
+│           └── tracking_alerts.csv     ← Six-row alert demo dataset
 ├── docs/
 │   ├── metric_definitions.md
 │   └── data_dictionary.md
 ├── dashboard/                          ← Dashboard plan (implementation planned)
 ├── images/                             ← Charts used in this README
+│   └── tracking_health_alerts.png      ← V2 tracking-health visualization
 └── reports/
 ```
 
@@ -218,6 +227,27 @@ Query: [`sql/08_product_analysis.sql`](sql/08_product_analysis.sql)
 
 ---
 
+### Tracking health monitoring
+
+Daily event volumes are compared against a rolling seven-day baseline to surface potential instrumentation failures. The monitor combines four signals: event-volume ratio (`event_count / expected_event_count`), a z-score measuring how far a day's count deviates from its baseline mean, page-view context (confirming whether overall traffic was reduced), and a traffic-adjusted event ratio (`event_volume_ratio / page_view_ratio`) that isolates event-specific drops from site-wide traffic declines.
+
+**Alert classifications from the November 2020 – January 2021 period:**
+
+- Four `add_to_cart` zero-count dates (November 21–24, 2020) were classified as `CRITICAL_TRACKING_OUTAGE` — the store was receiving substantial page-view traffic while add-to-cart events were entirely absent.
+- `view_item` on December 19 and `add_to_cart` on January 31 were classified as `LIKELY_TRAFFIC_DECLINE` — their traffic-adjusted event ratios were 0.860 and 0.903, indicating event volume moved broadly in line with a site-wide page-view reduction.
+
+**Why z-scores alone were insufficient:** The four validated outage dates produced z-scores of only approximately −0.71 to −0.78, well within a typical −3.0 alert threshold. Historical add-to-cart tracking on this property was sufficiently volatile that a four-day zero-count run did not produce a strong z-score. The hybrid zero-count rule with page-view context was required to detect the outage without generating spurious alerts.
+
+> **Scope caveat:** No fully labelled benchmark dataset exists for this property. General accuracy, precision, recall, and false-positive rate cannot be reported. The evaluation is limited to the six alerts in the demo dataset and the four dates that have been manually confirmed as outages.
+
+![GA4 tracking health alerts](images/tracking_health_alerts.png)
+
+Notebook: [`notebooks/02_tracking_health_monitor.ipynb`](notebooks/02_tracking_health_monitor.ipynb)
+
+Query: [`sql/12_tracking_health_monitor.sql`](sql/12_tracking_health_monitor.sql)
+
+---
+
 ## Business recommendations
 
 These are hypotheses for investigation and controlled testing. Observational data cannot establish causation.
@@ -282,6 +312,7 @@ jupyter notebook notebooks/
 | `sql/09_model_features.sql` | Session features for purchase prediction (planned) |
 | `sql/10_dashboard_tables.sql` | Dashboard summary tables |
 | `sql/11_weekly_conversion_trend.sql` | Weekly session-level funnel ✓ |
+| `sql/12_tracking_health_monitor.sql` | Rolling baseline alert classifier ✓ |
 
 ✓ = Executed and validated in BigQuery. All other queries have been syntax-reviewed but not yet run.
 
@@ -307,7 +338,7 @@ A Looker Studio / Tableau / Power BI dashboard is **planned** and not yet built.
 
 - **Dashboard (v2):** Build the planned Looker Studio or Tableau dashboard with funnel visualization, device comparison, channel performance, and weekly trend.
 - **Purchase prediction model (v2):** Complete `notebooks/02_purchase_prediction.ipynb` — logistic regression on early-session signals with explicit observation/label windows to prevent leakage.
-- **Tracking-health monitor (planned):** Automated daily alert when a key event drops to near-zero while adjacent events remain active.
+- **Tracking-health monitor (completed offline prototype):** Hybrid rule-based alert classifier implemented in `notebooks/02_tracking_health_monitor.ipynb`. Detected all four validated add-to-cart outage dates and separated two traffic-decline alerts from instrumentation failures. Future production improvements: scheduled BigQuery execution, automated Slack/email alert delivery, and ongoing threshold calibration as traffic patterns evolve.
 - **Causal analysis:** Uplift modeling or A/B test design to move beyond observational findings.
 - **Extended time range:** Replicate analysis on a longer dataset to separate seasonal effects from structural conversion trends.
 
