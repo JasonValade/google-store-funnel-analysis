@@ -32,6 +32,133 @@ def _demo_path(filename: str) -> Path:
     return p
 
 
+def inject_global_styles() -> None:
+    """Apply a polished visual theme across the dashboard pages."""
+    st.markdown(
+        """
+        <style>
+        :root {
+            color-scheme: dark;
+        }
+        .stApp {
+            background: linear-gradient(135deg, #07111f 0%, #0b1727 48%, #111c2f 100%);
+            color: #f8fafc;
+        }
+        .stApp, .stApp p, .stApp div, .stApp span, .stApp label, .stApp a,
+        .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp .stMarkdown,
+        .stApp .stTextInput, .stApp .stSelectbox, .stApp .stMultiSelect,
+        .stApp .stButton, .stApp .stDownloadButton, .stApp .stDataFrame {
+            color: #f8fafc !important;
+        }
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+            max-width: 1500px;
+        }
+        div[data-testid="stSidebar"] {
+            background: linear-gradient(180deg, #06111f 0%, #0f1b30 100%);
+            border-right: 1px solid rgba(148, 163, 184, 0.16);
+        }
+        div[data-testid="stSidebar"] * {
+            color: #f8fafc !important;
+        }
+        div[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
+            border-radius: 10px;
+            padding: 0.45rem 0.6rem;
+            transition: background 180ms ease;
+        }
+        div[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
+            background: rgba(79, 140, 255, 0.16);
+        }
+        .stMetric {
+            background: rgba(10, 21, 37, 0.96);
+            border: 1px solid rgba(148, 163, 184, 0.18);
+            border-radius: 14px;
+            padding: 0.7rem 0.85rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+        }
+        .stMetric [data-testid="stMetricValue"] {
+            color: #f8fafc !important;
+        }
+        .stAlert, .stInfo, .stSuccess, .stWarning {
+            border-radius: 12px;
+            border: 1px solid rgba(79, 140, 255, 0.2);
+            background: rgba(10, 21, 37, 0.96);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+        }
+        .stTextInput > div > div > input,
+        .stTextArea textarea,
+        .stSelectbox > div > div > div,
+        .stMultiSelect > div > div > div,
+        .stDateInput > div > div > div {
+            background: rgba(7, 16, 31, 0.95) !important;
+            color: #f8fafc !important;
+            border: 1px solid rgba(148, 163, 184, 0.24) !important;
+            border-radius: 10px !important;
+        }
+        .stButton > button, .stDownloadButton > button {
+            background: linear-gradient(90deg, #4f8cff 0%, #2563eb 100%);
+            color: white !important;
+            border: none;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+        }
+        .stButton > button:hover, .stDownloadButton > button:hover {
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+        }
+        h1, h2, h3 {
+            letter-spacing: -0.02em;
+        }
+        .stTabs [data-baseweb="tab-list"] {
+            gap: 0.4rem;
+        }
+        .stTabs [data-baseweb="tab"] {
+            border-radius: 999px;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid rgba(79, 140, 255, 0.2);
+            background: rgba(17, 28, 47, 0.75);
+            color: #f8fafc;
+        }
+        .stTabs [data-baseweb="tab"][aria-selected="true"] {
+            background: linear-gradient(90deg, #4f8cff 0%, #2563eb 100%);
+            color: white;
+            border-color: #4f8cff;
+        }
+        .section-card {
+            background: rgba(10, 21, 37, 0.96);
+            border: 1px solid rgba(79, 140, 255, 0.2);
+            border-radius: 16px;
+            padding: 1rem 1.1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f8fafc;
+            margin-bottom: 0.25rem;
+        }
+        .section-subtitle {
+            font-size: 0.92rem;
+            color: #cbd5e1;
+            line-height: 1.45;
+        }
+        .summary-pill {
+            display: inline-block;
+            padding: 0.28rem 0.6rem;
+            border-radius: 999px;
+            background: rgba(79, 140, 255, 0.15);
+            color: #bfdbfe;
+            font-size: 0.78rem;
+            font-weight: 600;
+            margin-bottom: 0.45rem;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 # ── Small CSV loaders ────────────────────────────────────────────────────────
 
 @st.cache_data
@@ -112,8 +239,31 @@ def load_model_features() -> pd.DataFrame:
 
 # ── Sidebar helper ────────────────────────────────────────────────────────────
 
+def render_page_header(title: str, subtitle: str, icon: str = "📊") -> None:
+    """Render a polished hero section at the top of each dashboard page."""
+    st.markdown(
+        f"""
+        <div style="background: linear-gradient(135deg, #111c2f 0%, #1e3a8a 50%, #4f8cff 100%);
+        border-radius: 18px; padding: 1.2rem 1.3rem; color: white;
+        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24); margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
+          <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.9;">
+            {icon} Portfolio insight
+          </div>
+          <div style="font-size: 1.24rem; font-weight: 700; margin-top: 0.3rem;">
+            {title}
+          </div>
+          <div style="margin-top: 0.4rem; opacity: 0.95; line-height: 1.5;">
+            {subtitle}
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def render_sidebar() -> None:
     """Consistent sidebar shown on every page."""
+    inject_global_styles()
     with st.sidebar:
         st.markdown("## 📊 Google Merchandise Store")
         st.markdown("**Funnel Analysis · V4**")

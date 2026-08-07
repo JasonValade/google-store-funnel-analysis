@@ -15,16 +15,32 @@ _DASH = Path(__file__).resolve().parent.parent
 if str(_DASH) not in sys.path:
     sys.path.insert(0, str(_DASH))
 
-from utils.data_loader import load_device_funnel, load_model_features, render_sidebar
+from utils.data_loader import (
+    load_device_funnel,
+    load_model_features,
+    render_page_header,
+    render_sidebar,
+)
 from utils.charts import device_bar_chart
 
 render_sidebar()
-
-st.title("📱 Device & Product Insights")
-st.caption(
-    "Device conversion comparison · Product-opportunity candidates · Nov 2020 – Jan 2021"
+render_page_header(
+    "Device & Product Insights",
+    "Compare device performance and surface high-volume product candidates with lower-than-average purchase propensity.",
+    icon="📱",
 )
 st.divider()
+
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="summary-pill">Insight layer</div>
+        <div class="section-title">Device performance and product opportunity screening</div>
+        <div class="section-subtitle">This page combines device-level conversion comparison with a product table designed to surface candidates with high traffic and lower-than-average purchase intent.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 device_df   = load_device_funnel()
 features_df = load_model_features()

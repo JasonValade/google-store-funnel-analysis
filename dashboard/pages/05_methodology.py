@@ -14,9 +14,14 @@ _DASH = Path(__file__).resolve().parent.parent
 if str(_DASH) not in sys.path:
     sys.path.insert(0, str(_DASH))
 
-from utils.data_loader import load_model_features, render_sidebar
+from utils.data_loader import load_model_features, render_page_header, render_sidebar
 
 render_sidebar()
+render_page_header(
+    "Methodology & Limitations",
+    "Transparent documentation of the analysis approach, data constraints, and interpretation boundaries.",
+    icon="📋",
+)
 features_df = load_model_features()
 metadata_missing_mask = (
     features_df["first_item_price"].isna()
@@ -35,9 +40,18 @@ metadata_missing_summary = (
     f"({metadata_missing_pct:.2f}%)"
 )
 
-st.title("📋 Methodology & Limitations")
-st.caption("Transparency on dataset, analytical approach, and known limitations.")
 st.divider()
+
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="summary-pill">Transparency</div>
+        <div class="section-title">How the analysis was built and where its limits begin</div>
+        <div class="section-subtitle">This page defines the assumptions, data constraints, and modelling choices behind the dashboard so the conclusions remain properly scoped.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ── Dataset ────────────────────────────────────────────────────────────────────
 st.header("1. Dataset")

@@ -18,17 +18,27 @@ _DASH = Path(__file__).resolve().parent.parent
 if str(_DASH) not in sys.path:
     sys.path.insert(0, str(_DASH))
 
-from utils.data_loader import load_tracking_alerts, render_sidebar
+from utils.data_loader import load_tracking_alerts, render_page_header, render_sidebar
 from utils.charts import tracking_scatter
 
 render_sidebar()
-
-st.title("🔍 Tracking Health Monitor")
-st.caption(
-    "Hybrid GA4 tracking-health monitor · Nov 2020 – Jan 2021 · "
-    "**Offline prototype — not a deployed alerting service**"
+render_page_header(
+    "Tracking Health Monitor",
+    "A hybrid monitoring view for identifying critical tracking outages and likely traffic-driven declines.",
+    icon="🔍",
 )
 st.divider()
+
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="summary-pill">Monitoring view</div>
+        <div class="section-title">Protecting the integrity of the funnel signal</div>
+        <div class="section-subtitle">The monitoring view distinguishes true tracking failures from broader traffic declines so the downstream funnel analysis remains trustworthy.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 alerts_df = load_tracking_alerts()
 EVENT_LABELS = {

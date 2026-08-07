@@ -15,13 +15,20 @@ _DASH = Path(__file__).resolve().parent.parent
 if str(_DASH) not in sys.path:
     sys.path.insert(0, str(_DASH))
 
-from utils.data_loader import load_weekly_conversion, load_device_funnel, render_sidebar
+from utils.data_loader import (
+    load_weekly_conversion,
+    load_device_funnel,
+    render_page_header,
+    render_sidebar,
+)
 from utils.charts import weekly_conversion_chart, funnel_chart
 
 render_sidebar()
-
-st.title("📉 Funnel & Conversion Trends")
-st.caption("Primary ordered funnel · Weekly trends · Nov 2020 – Jan 2021")
+render_page_header(
+    "Funnel & Conversion Trends",
+    "Primary ordered funnel, weekly behavior, and conversion movement across the analysis window.",
+    icon="📉",
+)
 st.divider()
 
 weekly_df = load_weekly_conversion()
@@ -56,6 +63,17 @@ st.caption(
 )
 
 st.divider()
+
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="summary-pill">Focus area</div>
+        <div class="section-title">Weekly conversion movements and funnel drop-off</div>
+        <div class="section-subtitle">The trend view highlights whether conversion changes are due to broader traffic shifts or deterioration within the funnel itself.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ── Weekly conversion trend ───────────────────────────────────────────────────
 st.subheader("Weekly Purchase Conversion Rate")

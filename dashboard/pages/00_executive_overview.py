@@ -21,6 +21,25 @@ from utils.charts import funnel_chart, weekly_conversion_chart
 
 render_sidebar()
 
+st.markdown(
+    """
+    <div style="background: linear-gradient(135deg, #111c2f 0%, #1e3a8a 50%, #4f8cff 100%);
+    border-radius: 18px; padding: 1.2rem 1.3rem; color: white;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24); margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
+      <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.9;">
+        Portfolio dashboard
+      </div>
+      <div style="font-size: 1.35rem; font-weight: 700; margin-top: 0.3rem;">
+        From raw GA4 events to a business-ready conversion story
+      </div>
+      <div style="margin-top: 0.45rem; opacity: 0.95; line-height: 1.5;">
+        This experience brings together funnel analysis, tracking-health monitoring, and purchase propensity into a single polished executive view.
+      </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
+
 st.title("📊 Google Merchandise Store — Conversion Funnel Analysis")
 st.caption(
     "Nov 2020 – Jan 2021 · "
@@ -31,6 +50,36 @@ st.caption(
 )
 st.info("Use the sidebar to navigate between dashboard sections.", icon="🧭")
 st.divider()
+
+summary_col, insight_col = st.columns([1.2, 0.8])
+with summary_col:
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="summary-pill">Business context</div>
+            <div class="section-title">A complete funnel story, from acquisition to checkout</div>
+            <div class="section-subtitle">
+                This dashboard translates GA4 event data into a concise executive narrative around conversion behavior, instrumentation quality, and early purchase likelihood.
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+with insight_col:
+    st.markdown(
+        """
+        <div class="section-card">
+            <div class="summary-pill">What matters most</div>
+            <div class="section-title">Three sharp takeaways</div>
+            <div class="section-subtitle">
+                • Funnel drop-off is concentrated at checkout<br>
+                • Tracking health issues materially affect some funnel stages<br>
+                • Early-session signals can flag likely purchasers before checkout
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 device_df = load_device_funnel()
 weekly_df = load_weekly_conversion()

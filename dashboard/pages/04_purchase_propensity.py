@@ -25,6 +25,7 @@ from utils.data_loader import (
     load_calibration_curves,
     load_test_deciles,
     load_logistic_coefficients,
+    render_page_header,
     render_sidebar,
 )
 from utils.charts import (
@@ -35,13 +36,23 @@ from utils.charts import (
 )
 
 render_sidebar()
-
-st.title("🤖 Purchase Propensity Model")
-st.caption(
-    "Random Forest · Sigmoid calibration · Chronological test set · "
-    "**No live predictions — pre-computed results only**"
+render_page_header(
+    "Purchase Propensity Model",
+    "An interpretable, leakage-safe model for prioritizing sessions most likely to purchase after the first product view.",
+    icon="🤖",
 )
 st.divider()
+
+st.markdown(
+    """
+    <div class="section-card">
+        <div class="summary-pill">Model view</div>
+        <div class="section-title">Early-session purchase propensity at a glance</div>
+        <div class="section-subtitle">The model focuses on what is observable immediately after the first product view and highlights where prioritization could be most valuable.</div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ── Load all artifacts ────────────────────────────────────────────────────────
 metrics   = load_model_metrics()
