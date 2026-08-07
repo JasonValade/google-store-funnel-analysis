@@ -121,13 +121,10 @@ def render_sidebar() -> None:
         st.markdown(
             "**Period:** Nov 2020 – Jan 2021  \n"
             "**Sessions:** 77,020 product-view  \n"
-            "**Events:** 4.3 M GA4 events  \n"
+            "**Events:** 4,295,584 GA4 events  \n"
             "**Source:** BigQuery public dataset"
         )
-        st.divider()
-        st.warning(
-            "⚠️ **Offline portfolio prototype**  \n"
-            "All results are pre-computed from local files. "
-            "No BigQuery connection or Google credentials are required.",
-            icon=None,
+        st.caption(
+            "Offline portfolio prototype: pre-computed local artifacts only "
+            "(no live BigQuery access, live scoring, or credentials)."
         )

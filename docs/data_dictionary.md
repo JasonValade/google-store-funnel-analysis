@@ -58,7 +58,7 @@ All features use only information available at or before `first_view_item_timest
 | `acquisition_medium` | STRING | Feature | `traffic_source.medium` | **First-user acquisition medium** — same caveat as `acquisition_source`. | None (but see caveat on acquisition scope) |
 | `first_item_name` | STRING | Feature | `items[0].item_name` on the first `view_item` event | `LOWER(TRIM(...))` normalised name of the first item in the items array of the first `view_item` event. If the items array is empty or item_name is NULL, value is `'(unknown)'`. **Uses only the first item** in the array consistently across all sessions. | None — item is known at the view_item moment |
 | `first_item_category` | STRING | Feature | `items[0].item_category` on the first `view_item` event | Product category of the first item in the first `view_item` event. `COALESCE(..., '(unknown)')` applied. | None — item is known at the view_item moment |
-| `first_item_price` | FLOAT | Feature | `items[0].price` on the first `view_item` event | Listed price of the first item in the first `view_item` event. NULL when price is absent (~20,697 sessions). | None — item is known at the view_item moment |
+| `first_item_price` | FLOAT | Feature | `items[0].price` on the first `view_item` event | Listed price of the first item in the first `view_item` event. NULL when price is absent (22,884 of 77,020 sessions meet the explicit first-item metadata-missing definition when combined with unknown/missing name/category). | None — item is known at the view_item moment |
 | `hour_of_day` | INTEGER | Feature | `event_timestamp` of first `view_item` | Hour (0–23) of the first `view_item` event in UTC. | None |
 | `day_of_week` | INTEGER | Feature | `event_timestamp` of first `view_item` | Day of the week of the first `view_item` event (1 = Sunday … 7 = Saturday, per BigQuery `EXTRACT(DAYOFWEEK …)`). | None |
 | `seconds_from_session_start_to_first_view` | FLOAT | Feature | `event_timestamp` of `session_start` and first `view_item` | Elapsed seconds between the session's `session_start` event and the first `view_item`. Computed as `(first_view_item_timestamp − session_start_timestamp) / 1,000,000`. Should be ≥ 0. | None |
@@ -77,7 +77,7 @@ All features use only information available at or before `first_view_item_timest
 
 ### Missing-value notes
 
-- `first_item_price` is NULL for approximately 20,697 sessions (26.9% of total). The modeling notebook uses median imputation inside the training pipeline and adds an `item_metadata_missing` indicator feature.
+- Using the explicit definition (`first_item_price` missing, `first_item_name == '(unknown)'`, or `first_item_category` missing/`'(unknown)'`), 22,884 of 77,020 sessions (29.71%) have incomplete first-item metadata. The modeling pipeline includes an `item_metadata_missing` indicator feature.
 - `first_item_name` and `first_item_category` are `'(unknown)'` when the first `view_item` event's items array is empty or the field is NULL.
 - `acquisition_source` and `acquisition_medium` fall back to `'(unknown)'` when `traffic_source` fields are missing.
 
@@ -91,4 +91,3 @@ The following fields appeared in an earlier draft of the model specification and
 | `begins_in_obs_window` | Post-prediction behavior — `begin_checkout` events after the prediction moment are excluded |
 | `purchase_during_observation` | Target-derived — recording the target value as a feature is direct leakage |
 | Fixed ten-minute observation window | Replaced by the strict `event_timestamp < first_view_item_timestamp` rule; no arbitrary window is imposed |
-

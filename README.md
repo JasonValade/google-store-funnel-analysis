@@ -78,7 +78,7 @@ GA4 event-level e-commerce data from 2020-11-01 through 2021-01-31. Data is an o
 - **BigQuery** (GoogleSQL) — all funnel and product queries
 - **Python 3** — statistical analysis and visualization
 - **pandas · numpy · matplotlib · seaborn · scipy · statsmodels · scikit-learn · jupyter**
-- **Looker Studio / Tableau / Power BI** — dashboard (planned)
+- **Streamlit (V4)** — offline multi-page portfolio dashboard powered by pre-computed artifacts
 
 **BigQuery access and billing:**
 - BigQuery Sandbox allows free queries against public datasets without a credit card, subject to quota limits. See https://cloud.google.com/bigquery/docs/sandbox.
@@ -121,7 +121,7 @@ google-store-funnel-analysis/
 ├── docs/
 │   ├── metric_definitions.md
 │   └── data_dictionary.md
-├── dashboard/                          ← Dashboard plan (implementation planned)
+├── dashboard/                          ← V4 Streamlit dashboard (offline portfolio prototype)
 ├── images/                             ← Charts used in this README
 │   ├── tracking_health_alerts.png      ← V2 tracking-health visualization
 │   ├── model_precision_recall.png      ← V3 precision-recall curves (validation)
@@ -357,7 +357,7 @@ Add automated alerts that fire when a key event (e.g., `add_to_cart`) drops to n
   - *Short time window.* Only three months of data are available. Seasonal and holiday effects are entangled with structural trends; the November purchase rate (6.12%) differed from December (7.26%) and January (4.63%).
   - *Temporal conversion drift.* Purchase rates varied materially across months. The model was trained on a period with higher purchase rates than the test period; this drift will continue in production.
   - *Obfuscated GA4 data.* Item names, IDs, and other fields have been obfuscated. Feature patterns may not transfer directly to a live property.
-  - *Incomplete item metadata.* 20,697 sessions (26.9%) lack complete item metadata (price, name, or category). A `item_metadata_missing` indicator is included as a feature.
+  - *Incomplete item metadata.* Using the explicit first-item definition (`first_item_price` missing, `first_item_name == '(unknown)'`, or `first_item_category` missing/`'(unknown)'`), **22,884 of 77,020 sessions (29.71%)** have incomplete metadata. An `item_metadata_missing` indicator is included as a feature.
   - *First-user acquisition, not session attribution.* `acquisition_source` and `acquisition_medium` reflect how the user was originally acquired, not the source of the specific session. Treat channel insights accordingly.
   - *Class imbalance.* Purchases represent ~6% of sessions. Precision is inherently limited; the model is designed for ranking and triage, not high-confidence individual predictions.
   - *Calibration and thresholds require monitoring.* The sigmoid calibration layer and the 0.0892 threshold were optimised for this dataset and period. Both should be recalibrated as traffic patterns, product mix, and purchase rates change.
@@ -418,15 +418,34 @@ Small, aggregated, non-sensitive demo CSVs may be committed to `data/processed/d
 
 ---
 
-## Dashboard plan
+## Dashboard (V4 Streamlit app)
 
-A Looker Studio / Tableau / Power BI dashboard is **planned** and not yet built. See [`dashboard/README.md`](dashboard/README.md) for the proposed KPIs, chart types, and filters.
+The repository includes a built, working **V4 Streamlit dashboard** that presents
+all validated analytics and model results as an **offline portfolio prototype**.
+It reads pre-computed local CSV/JSON artifacts and does not use live BigQuery access,
+live scoring, or production alerting.
+
+Run locally:
+
+```bash
+python -m streamlit run dashboard/app.py
+```
+
+Dashboard pages:
+- Executive Overview
+- Funnel & Conversion Trends
+- Device & Product Insights
+- Tracking Health
+- Purchase Propensity
+- Methodology & Limitations
+
+See [`dashboard/README.md`](dashboard/README.md) for page-level details and artifact inputs.
 
 ---
 
 ## Future work
 
-- **Dashboard (next planned version):** Build the planned Looker Studio or Tableau dashboard with funnel visualization, device comparison, channel performance, weekly trend, and propensity-score distribution panels.
+- **Dashboard UX polish (V4):** Continue improving readability and portfolio presentation while preserving validated metrics and offline artifact-driven behavior.
 - **Purchase-propensity model (V3 — completed):** Leakage-safe session-level Random Forest model with sigmoid calibration. Implemented in `notebooks/03_purchase_prediction.ipynb`. Chronological test PR-AUC 0.1402; top-decile lift 3.13×; calibrated Brier 0.0457. No model artifact or deployed prediction service exists.
 - **Tracking-health monitor (V2 — completed offline prototype):** Hybrid rule-based alert classifier in `notebooks/02_tracking_health_monitor.ipynb`. Detected all four validated add-to-cart outage dates. Future production improvements: scheduled BigQuery execution, automated Slack/email alert delivery, and ongoing threshold calibration as traffic patterns evolve.
 - **Production monitoring and model drift:** Scheduled BigQuery feature refresh, monitoring for purchase-rate drift, periodic recalibration of the sigmoid layer, and threshold review as traffic patterns shift.

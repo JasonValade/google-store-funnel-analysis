@@ -24,8 +24,8 @@ render_sidebar()
 st.title("📊 Google Merchandise Store — Conversion Funnel Analysis")
 st.caption(
     "Nov 2020 – Jan 2021 · "
-    "4.3 M GA4 events · "
-    "360 k sessions · "
+    "4,295,584 GA4 events · "
+    "360,129 sessions · "
     "BigQuery public dataset · "
     "**Offline portfolio prototype — no live data**"
 )
@@ -142,7 +142,8 @@ with v3:
     st.markdown(
         "- Leakage-safe, session-level Random Forest + sigmoid calibration  \n"
         "- Prediction at first Product view; target = session-level Purchase  \n"
-        "- Test PR-AUC **0.1402** vs. 0.0504 no-skill (2.8× improvement)  \n"
+        "- Test PR-AUC was **2.8× the no-skill baseline**.  \n"
+        "- Chronological test values: PR-AUC **0.1402** vs. no-skill **0.0504**  \n"
         "- Top-decile lift **3.13×**, capturing **31.2%** of purchases  \n"
         "- Brier score reduced from 0.1778 → **0.0457** after calibration  \n"
         "- Propensity associations only — **not causal effects**"

@@ -26,6 +26,14 @@ metadata_missing_mask = (
 )
 metadata_missing_count = int(metadata_missing_mask.sum())
 metadata_missing_pct = metadata_missing_count / len(features_df) * 100
+metadata_missing_definition = (
+    "`first_item_price` missing, `first_item_name == '(unknown)'`, "
+    "or `first_item_category` missing/`'(unknown)'`"
+)
+metadata_missing_summary = (
+    f"{metadata_missing_count:,} of {len(features_df):,} sessions "
+    f"({metadata_missing_pct:.2f}%)"
+)
 
 st.title("📋 Methodology & Limitations")
 st.caption("Transparency on dataset, analytical approach, and known limitations.")
@@ -198,9 +206,9 @@ st.markdown(
     | Limitation | Detail |
     |---|---|
     | **Three-month window** | Nov 2020 – Jan 2021 covers one holiday season. Patterns may differ in other periods. |
-    | **Obfuscated data** | Session IDs, user IDs, and some event parameters are obfuscated. We compute an explicit item-metadata-missing flag from `model_features.csv.gz`: `first_item_price` missing OR `first_item_name == '(unknown)'` OR `first_item_category` missing OR `first_item_category == '(unknown)'`. This affects **{metadata_missing_count:,} / {len(features_df):,} sessions ({metadata_missing_pct:.2f}%)**. |
+    | **Obfuscated data** | Session IDs, user IDs, and some event parameters are obfuscated. Using the explicit first-item metadata-missing definition ({metadata_missing_definition}), this affects **{metadata_missing_summary}**. |
     | **Temporal drift** | The model is trained on Nov–Dec 2020 and tested on Jan 2021. January has a lower purchase rate (5.04% vs. 6.71% in training). Performance on data from different periods is unknown. |
-    | **Missing item metadata** | Using the same explicit metadata-missing definition above, {metadata_missing_pct:.2f}% of sessions have incomplete first-item metadata, limiting product-level signal quality. |
+    | **Missing item metadata** | Using the same explicit definition ({metadata_missing_definition}), **{metadata_missing_summary}** have incomplete first-item metadata, limiting product-level signal quality. |
     | **Acquisition-source encoding** | The model captures first-session acquisition signals. Returning-user behaviour is proxied by `is_new_visitor`; full multi-session attribution is not available. |
     | **Class imbalance** | ~6.1% positive rate. `class_weight='balanced'` is applied but the model still has limited recall at any reasonable precision threshold. |
     | **No causal interpretation** | All associations are observational. High-propensity sessions may share characteristics that drive purchase intent independently of any intervention. Controlled A/B experiments are required before acting on model scores. |
