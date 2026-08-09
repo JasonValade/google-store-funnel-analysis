@@ -139,10 +139,30 @@ with col_funnel:
     c2p = total_purchases / total_checkouts * 100
     overall = total_purchases / total_views * 100
 
-    m1, m2, m3 = st.columns(3)
-    m1.metric("View → Checkout", f"{v2c:.2f}%")
-    m2.metric("Checkout → Purchase", f"{c2p:.2f}%")
-    m3.metric("Overall conversion", f"{overall:.2f}%")
+    # These metrics sit in the narrow left-hand dashboard column. A compact
+    # table avoids Streamlit metric cards truncating both labels and values.
+    st.markdown(
+        f"""
+        <div style="display:grid; gap:0.55rem; margin-top:0.35rem;">
+          <div style="display:flex; justify-content:space-between; align-items:center;
+                      gap:1rem; padding:0.7rem 0.85rem; border:1px solid rgba(127,127,127,.3);
+                      border-radius:0.7rem;">
+            <span>View → Checkout</span><strong style="white-space:nowrap; font-size:1.25rem;">{v2c:.2f}%</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;
+                      gap:1rem; padding:0.7rem 0.85rem; border:1px solid rgba(127,127,127,.3);
+                      border-radius:0.7rem;">
+            <span>Checkout → Purchase</span><strong style="white-space:nowrap; font-size:1.25rem;">{c2p:.2f}%</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;
+                      gap:1rem; padding:0.7rem 0.85rem; border:1px solid rgba(127,127,127,.3);
+                      border-radius:0.7rem;">
+            <span>Overall conversion</span><strong style="white-space:nowrap; font-size:1.25rem;">{overall:.2f}%</strong>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 with col_trend:
     st.subheader("Weekly Purchase Conversion Rate")

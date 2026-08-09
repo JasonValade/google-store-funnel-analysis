@@ -79,7 +79,9 @@ def funnel_chart(
     fig = go.Figure(go.Funnel(
         y=stages,
         x=values,
-        textposition="inside",
+        # Let Plotly move labels outside narrow stages so checkout and purchase
+        # values remain readable when the chart is rendered in a small column.
+        textposition="auto",
         textinfo="value+percent initial",
         textfont=dict(size=13, color="rgba(245,245,245,0.96)"),
         marker=dict(color=[C["blue"], C["sky"], C["green"]]),
