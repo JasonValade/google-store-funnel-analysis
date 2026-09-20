@@ -33,125 +33,161 @@ def _demo_path(filename: str) -> Path:
 
 
 def inject_global_styles() -> None:
-    """Apply a polished visual theme across the dashboard pages."""
+    """
+    Layer a small set of design tokens and component refinements on top of the
+    native Streamlit dark theme (see .streamlit/config.toml). Colors, fonts,
+    and base surfaces are left to Streamlit's theming engine; CSS here is
+    limited to spacing, hierarchy, and card/tab polish that theming can't set.
+    """
     st.markdown(
         """
         <style>
         :root {
-            color-scheme: dark;
+            --gsf-border: rgba(148, 163, 184, 0.18);
+            --gsf-card-bg: rgba(255, 255, 255, 0.03);
+            --gsf-radius-sm: 8px;
+            --gsf-radius-md: 12px;
+            --gsf-radius-lg: 16px;
+            --gsf-space-sm: 0.5rem;
+            --gsf-space-md: 1rem;
+            --gsf-space-lg: 1.5rem;
+            --gsf-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
         }
-        .stApp {
-            background: linear-gradient(135deg, #07111f 0%, #0b1727 48%, #111c2f 100%);
-            color: #f8fafc;
-        }
-        .stApp, .stApp p, .stApp div, .stApp span, .stApp label, .stApp a,
-        .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp .stMarkdown,
-        .stApp .stTextInput, .stApp .stSelectbox, .stApp .stMultiSelect,
-        .stApp .stButton, .stApp .stDownloadButton, .stApp .stDataFrame {
-            color: #f8fafc !important;
-        }
+
+        /* ── Layout & spacing ────────────────────────────────────────────── */
         .block-container {
             padding-top: 2rem;
             padding-bottom: 3rem;
-            max-width: 1500px;
+            max-width: 1440px;
         }
-        div[data-testid="stSidebar"] {
-            background: linear-gradient(180deg, #06111f 0%, #0f1b30 100%);
-            border-right: 1px solid rgba(148, 163, 184, 0.16);
+        [data-testid="stVerticalBlock"] > [data-testid="stVerticalBlockBorderWrapper"] {
+            margin-bottom: var(--gsf-space-sm);
         }
-        div[data-testid="stSidebar"] * {
-            color: #f8fafc !important;
-        }
+
+        /* ── Typography scale ───────────────────────────────────────────── */
+        h1 { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em; }
+        h2 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; }
+        h3 { font-size: 1.15rem; font-weight: 650; }
+        p, li, .stMarkdown, label { line-height: 1.6; }
+        [data-testid="stCaptionContainer"] { line-height: 1.5; opacity: 0.82; }
+
+        /* ── Sidebar navigation ──────────────────────────────────────────── */
+        div[data-testid="stSidebarNav"] a,
         div[data-testid="stSidebar"] [data-testid="stSidebarNavLink"] {
-            border-radius: 10px;
+            border-radius: var(--gsf-radius-sm);
             padding: 0.45rem 0.6rem;
-            transition: background 180ms ease;
+            transition: background 150ms ease;
         }
+        div[data-testid="stSidebarNav"] a:hover,
         div[data-testid="stSidebar"] [data-testid="stSidebarNavLink"]:hover {
-            background: rgba(79, 140, 255, 0.16);
+            background: rgba(79, 140, 255, 0.14);
         }
-        .stMetric {
-            background: rgba(10, 21, 37, 0.96);
-            border: 1px solid rgba(148, 163, 184, 0.18);
-            border-radius: 14px;
-            padding: 0.7rem 0.85rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+
+        /* ── Metric cards ────────────────────────────────────────────────── */
+        div[data-testid="stMetric"] {
+            background: var(--gsf-card-bg);
+            border: 1px solid var(--gsf-border);
+            border-radius: var(--gsf-radius-md);
+            padding: 0.85rem 1rem 0.7rem;
+            box-shadow: var(--gsf-shadow);
         }
-        .stMetric [data-testid="stMetricValue"] {
-            color: #f8fafc !important;
+        div[data-testid="stMetricLabel"] {
+            font-size: 0.8rem;
+            font-weight: 600;
+            opacity: 0.72;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
         }
-        .stAlert, .stInfo, .stSuccess, .stWarning {
-            border-radius: 12px;
-            border: 1px solid rgba(79, 140, 255, 0.2);
-            background: rgba(10, 21, 37, 0.96);
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+        div[data-testid="stMetricValue"] {
+            font-size: 1.65rem;
+            font-weight: 700;
         }
-        .stTextInput > div > div > input,
-        .stTextArea textarea,
-        .stSelectbox > div > div > div,
-        .stMultiSelect > div > div > div,
-        .stDateInput > div > div > div {
-            background: rgba(7, 16, 31, 0.95) !important;
-            color: #f8fafc !important;
-            border: 1px solid rgba(148, 163, 184, 0.24) !important;
-            border-radius: 10px !important;
+        div[data-testid="stMetricDelta"] {
+            font-size: 0.82rem;
+            font-weight: 600;
         }
-        .stButton > button, .stDownloadButton > button {
-            background: linear-gradient(90deg, #4f8cff 0%, #2563eb 100%);
-            color: white !important;
-            border: none;
-            border-radius: 999px;
-            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.28);
+
+        /* ── Alerts / info boxes ─────────────────────────────────────────── */
+        div[data-testid="stAlertContainer"] {
+            border-radius: var(--gsf-radius-md);
+            box-shadow: var(--gsf-shadow);
         }
-        .stButton > button:hover, .stDownloadButton > button:hover {
-            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
-        }
-        h1, h2, h3 {
-            letter-spacing: -0.02em;
-        }
+
+        /* ── Tabs ────────────────────────────────────────────────────────── */
         .stTabs [data-baseweb="tab-list"] {
-            gap: 0.4rem;
+            gap: 0.35rem;
+            border-bottom: 1px solid var(--gsf-border);
         }
         .stTabs [data-baseweb="tab"] {
-            border-radius: 999px;
-            padding: 0.4rem 0.8rem;
-            border: 1px solid rgba(79, 140, 255, 0.2);
-            background: rgba(17, 28, 47, 0.75);
-            color: #f8fafc;
+            border-radius: 999px 999px 0 0;
+            padding: 0.45rem 1rem;
+            font-weight: 550;
         }
         .stTabs [data-baseweb="tab"][aria-selected="true"] {
-            background: linear-gradient(90deg, #4f8cff 0%, #2563eb 100%);
-            color: white;
-            border-color: #4f8cff;
+            font-weight: 700;
         }
+
+        /* ── Section / hero cards (custom HTML used sparingly) ──────────── */
         .section-card {
-            background: rgba(10, 21, 37, 0.96);
-            border: 1px solid rgba(79, 140, 255, 0.2);
-            border-radius: 16px;
-            padding: 1rem 1.1rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            background: var(--gsf-card-bg);
+            border: 1px solid var(--gsf-border);
+            border-radius: var(--gsf-radius-lg);
+            padding: 1rem 1.2rem;
+            margin-bottom: var(--gsf-space-md);
+            box-shadow: var(--gsf-shadow);
         }
         .section-title {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
-            color: #f8fafc;
             margin-bottom: 0.25rem;
         }
         .section-subtitle {
             font-size: 0.92rem;
-            color: #cbd5e1;
-            line-height: 1.45;
+            opacity: 0.82;
+            line-height: 1.55;
         }
         .summary-pill {
             display: inline-block;
-            padding: 0.28rem 0.6rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 999px;
-            background: rgba(79, 140, 255, 0.15);
-            color: #bfdbfe;
-            font-size: 0.78rem;
-            font-weight: 600;
-            margin-bottom: 0.45rem;
+            background: rgba(79, 140, 255, 0.16);
+            color: #bcd4ff;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .page-hero {
+            background: linear-gradient(120deg, rgba(79,140,255,0.16) 0%, rgba(37,99,235,0.10) 100%);
+            border: 1px solid rgba(79, 140, 255, 0.22);
+            border-radius: var(--gsf-radius-lg);
+            padding: 1.1rem 1.3rem;
+            margin-bottom: var(--gsf-space-md);
+        }
+        .page-hero .eyebrow {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.14em;
+            opacity: 0.75;
+            font-weight: 700;
+        }
+        .page-hero .headline {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 0.3rem;
+        }
+        .page-hero .subhead {
+            margin-top: 0.4rem;
+            opacity: 0.88;
+            line-height: 1.55;
+            font-size: 0.95rem;
+        }
+
+        /* ── Accessibility: visible focus outline ───────────────────────── */
+        :focus-visible {
+            outline: 2px solid #4f8cff;
+            outline-offset: 2px;
         }
         </style>
         """,
@@ -240,21 +276,13 @@ def load_model_features() -> pd.DataFrame:
 # ── Sidebar helper ────────────────────────────────────────────────────────────
 
 def render_page_header(title: str, subtitle: str, icon: str = "📊") -> None:
-    """Render a polished hero section at the top of each dashboard page."""
+    """Render a consistent, lightweight page header (native-first, minimal CSS)."""
     st.markdown(
         f"""
-        <div style="background: linear-gradient(135deg, #111c2f 0%, #1e3a8a 50%, #4f8cff 100%);
-        border-radius: 18px; padding: 1.2rem 1.3rem; color: white;
-        box-shadow: 0 14px 36px rgba(0, 0, 0, 0.24); margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.08);">
-          <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.9;">
-            {icon} Portfolio insight
-          </div>
-          <div style="font-size: 1.24rem; font-weight: 700; margin-top: 0.3rem;">
-            {title}
-          </div>
-          <div style="margin-top: 0.4rem; opacity: 0.95; line-height: 1.5;">
-            {subtitle}
-          </div>
+        <div class="page-hero">
+          <div class="eyebrow">{icon} Portfolio insight</div>
+          <div class="headline">{title}</div>
+          <div class="subhead">{subtitle}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -265,15 +293,17 @@ def render_sidebar() -> None:
     """Consistent sidebar shown on every page."""
     inject_global_styles()
     with st.sidebar:
-        st.markdown("## 📊 Google Merchandise Store")
-        st.markdown("**Funnel Analysis · V4**")
+        st.markdown("### 📊 Google Merchandise Store")
+        st.caption("Funnel Analysis · V4")
         st.divider()
-        st.markdown(
+        m1, m2 = st.columns(2)
+        m1.metric("Sessions", "77.0K", help="Product-view sessions in the model dataset.")
+        m2.metric("Events", "4.30M", help="Total GA4 events, Nov 2020 – Jan 2021.")
+        st.caption(
             "**Period:** Nov 2020 – Jan 2021  \n"
-            "**Sessions:** 77,020 product-view  \n"
-            "**Events:** 4,295,584 GA4 events  \n"
             "**Source:** BigQuery public dataset"
         )
+        st.divider()
         st.caption(
             "Offline portfolio prototype: pre-computed local artifacts only "
             "(no live BigQuery access, live scoring, or credentials)."

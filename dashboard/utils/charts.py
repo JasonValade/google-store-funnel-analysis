@@ -43,16 +43,18 @@ CALIB_COLORS = {
 def _base_layout(**kwargs) -> dict:
     """Shared layout defaults applied to every chart."""
     return dict(
-        font=dict(family="Inter, Arial, sans-serif", size=13),
+        font=dict(family="Inter, Arial, sans-serif", size=14, color="rgba(231,236,243,0.92)"),
         template="plotly",
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
         margin=dict(l=10, r=10, t=50, b=10),
         legend=dict(
             bgcolor="rgba(0,0,0,0)",
-            bordercolor="rgba(127,127,127,0.45)",
+            bordercolor="rgba(148,163,184,0.35)",
             borderwidth=1,
+            font=dict(size=12.5),
         ),
+        hoverlabel=dict(font_size=13, font_family="Inter, Arial, sans-serif"),
         **kwargs,
     )
 
@@ -60,11 +62,18 @@ def _base_layout(**kwargs) -> dict:
 def apply_theme(fig: go.Figure, title: str = "") -> go.Figure:
     """Apply a Streamlit-compatible theme for both dark and light mode."""
     fig.update_layout(
-        title=dict(text=title, font=dict(size=15)),
+        title=dict(text=title, font=dict(size=16)),
         **_base_layout(),
     )
-    fig.update_xaxes(showgrid=False, zeroline=False, linecolor="rgba(127,127,127,0.45)", automargin=True)
-    fig.update_yaxes(showgrid=True, gridcolor="rgba(127,127,127,0.25)", zeroline=False, automargin=True)
+    fig.update_xaxes(
+        showgrid=False, zeroline=False,
+        linecolor="rgba(148,163,184,0.35)", automargin=True,
+        title_font=dict(size=13),
+    )
+    fig.update_yaxes(
+        showgrid=True, gridcolor="rgba(148,163,184,0.18)", zeroline=False,
+        automargin=True, title_font=dict(size=13),
+    )
     return fig
 
 
@@ -87,7 +96,7 @@ def funnel_chart(
         marker=dict(color=[C["blue"], C["sky"], C["green"]]),
         connector=dict(line=dict(color="rgba(127,127,127,0.5)", width=1)),
     ))
-    fig.update_layout(title=dict(text=title, font=dict(size=15)), **_base_layout())
+    fig.update_layout(title=dict(text=title, font=dict(size=16)), **_base_layout())
     return fig
 
 
