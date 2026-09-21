@@ -145,7 +145,9 @@ def weekly_conversion_chart(
         hovermode="x unified",
         **_base_layout(),
     )
-    apply_theme(fig, "Weekly Purchase Conversion Rate")
+    # Title is left blank because every call site already renders an
+    # identical st.subheader immediately above the chart.
+    apply_theme(fig, "")
     return fig
 
 
