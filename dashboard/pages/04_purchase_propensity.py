@@ -96,7 +96,7 @@ k4.metric(
 k5.metric(
     "Top-decile lift",
     f"{metrics['test_top_decile_lift']:.2f}×",
-    help="Purchase rate in the top risk decile ÷ overall test purchase rate.",
+    help="Purchase rate in the top risk decile ÷ overall test purchase rate. Full precision: 3.124542×",
 )
 k6.metric(
     "Top-decile capture",
@@ -210,7 +210,11 @@ st.divider()
 
 # ── Validation comparison table ───────────────────────────────────────────────
 st.subheader("Validation Model Comparison")
-st.caption("Uncalibrated probabilities on the validation set (Jan 1–15, 2021).")
+st.caption(
+    "Uncalibrated probabilities on the validation set (Jan 1–15, 2021). "
+    "These metrics are used for model selection, calibration, and threshold selection. "
+    "Test-set metrics are reported separately above."
+)
 
 vc_display = val_comp.copy()
 for col in ["pr_auc", "roc_auc", "brier_score", "precision", "recall", "f1"]:

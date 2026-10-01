@@ -29,7 +29,7 @@
   "test_precision": 0.157781,
   "test_recall": 0.318314,
   "test_f1": 0.210983,
-  "test_top_decile_lift": 3.126832,
+  "test_top_decile_lift": 3.124542,
   "test_top_decile_capture": 0.3125,
   "confusion_matrix_tn": 11801,
   "confusion_matrix_fp": 1169,

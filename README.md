@@ -12,7 +12,7 @@ An end-to-end analytics portfolio project that turns 4.3 million Google Analytic
 - Built a timestamp-validated funnel covering **77,020 product-view sessions** and identified the largest loss between product view and checkout.
 - Detected all four manually confirmed `add_to_cart` outage dates with a traffic-adjusted tracking-health monitor.
 - Developed a leakage-safe purchase-propensity model with **0.1402 test PR-AUC**, versus a **0.0504 no-skill baseline**.
-- Ranked the highest-risk scoring decile at **3.13× lift**, capturing **31.2% of purchases**.
+- Ranked the highest-risk scoring decile at **3.12× lift**, capturing **31.3% of purchases**.
 - Shipped a six-page Streamlit dashboard powered by committed, pre-computed artifacts—no credentials or live database required.
 
 ## Business question
@@ -68,8 +68,8 @@ The model predicts whether a purchase will occur later in a session using only i
 | No-skill PR-AUC | 0.0504 |
 | ROC-AUC | 0.7876 |
 | Calibrated Brier score | 0.0457 |
-| Top-decile lift | **3.13×** |
-| Purchases captured in top decile | **31.2%** |
+| Top-decile lift | **3.12×** |
+| Purchases captured in top decile | **31.3%** |
 
 To prevent leakage, the pipeline uses chronological train/validation/test splits, fits preprocessing on training data only, excludes post-view behavior, and performs calibration and threshold selection on validation data only.
 

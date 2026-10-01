@@ -103,7 +103,7 @@ k4.metric(
     value=f"{metrics['test_top_decile_lift']:.2f}×",
     help=(
         "Calibrated Random Forest on the chronological test set. "
-        "Top-risk decile purchased at 3.13× the overall test rate. "
+        "Top-risk decile purchased at 3.12× the overall test rate. "
         "Associations only — not causal effects."
     ),
 )
@@ -192,7 +192,7 @@ with v3:
         "- Prediction at first Product view; target = session-level Purchase  \n"
         "- Test PR-AUC was **2.8× the no-skill baseline**.  \n"
         "- Chronological test values: PR-AUC **0.1402** vs. no-skill **0.0504**  \n"
-        "- Top-decile lift **3.13×**, capturing **31.2%** of purchases  \n"
+        "- Top-decile lift **3.12×**, capturing **31.3%** of purchases  \n"
         "- Brier score reduced from 0.1778 → **0.0457** after calibration  \n"
         "- Propensity associations only — **not causal effects**"
     )
