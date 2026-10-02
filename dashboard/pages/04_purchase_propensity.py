@@ -10,6 +10,7 @@ No live predictions are made on this page.
 
 import sys
 from pathlib import Path
+from decimal import Decimal, ROUND_HALF_UP
 
 import streamlit as st
 import pandas as pd
@@ -54,6 +55,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+st.info(
+    "**Full methodology:** See [reports/model_methodology.md](https://github.com/JasonValade/google-store-funnel-analysis/blob/main/reports/model_methodology.md) for "
+    "comprehensive documentation on feature construction, evaluation procedures, and economic decision context. "
+    "(Link will open after this branch is merged to main.)",
+    icon="📄",
+)
+
 # ── Load all artifacts ────────────────────────────────────────────────────────
 metrics   = load_model_metrics()
 val_comp  = load_validation_comparison()
@@ -61,6 +69,23 @@ pr_curves = load_pr_curves()
 cal_curves = load_calibration_curves()
 deciles   = load_test_deciles()
 coefs     = load_logistic_coefficients()
+
+# ── Consistency check: derive lift and capture from decile table ─────────────
+# This ensures metric cards agree with the authoritative decile artifact
+decile_1 = deciles[deciles["risk_decile"] == 1].iloc[0]
+derived_lift = decile_1["lift"]
+derived_capture = decile_1["purchase_count"] / metrics["test_purchases"]
+
+# Use derived values for display
+metrics["test_top_decile_lift"] = derived_lift
+metrics["test_top_decile_capture"] = derived_capture
+
+# Format capture with explicit half-up rounding for display
+capture_pct_display = (
+    Decimal(int(decile_1["purchase_count"]))
+    / Decimal(int(metrics["test_purchases"]))
+    * Decimal("100")
+).quantize(Decimal("0.1"), rounding=ROUND_HALF_UP)
 
 # ── KPI cards ─────────────────────────────────────────────────────────────────
 st.subheader("Test-Set Performance (Calibrated Random Forest)")
@@ -100,8 +125,9 @@ k5.metric(
 )
 k6.metric(
     "Top-decile capture",
-    f"{metrics['test_top_decile_capture']*100:.1f}%",
-    help="Fraction of all test purchases captured in the top-risk decile.",
+    f"{capture_pct_display}%",
+    help=f"Highest-score decile contained {int(decile_1['purchase_count'])} of {int(metrics['test_purchases'])} test purchases: "
+         f"{int(decile_1['purchase_count'])} / {int(metrics['test_purchases'])} = {metrics['test_top_decile_capture']*100:.2f}%, displayed as {capture_pct_display}%.",
 )
 
 st.divider()
@@ -109,14 +135,15 @@ st.divider()
 # ── Charts row 1: PR curves + calibration ─────────────────────────────────────
 st.subheader("Model Evaluation Charts")
 
-tab_pr, tab_cal, tab_decile, tab_coef = st.tabs([
-    "Precision-Recall Curves",
-    "Calibration Curves",
-    "Risk-Decile Lift",
-    "Feature Associations (LR)",
-])
+# Use selectbox for better accessibility across all viewport sizes
+chart_option = st.selectbox(
+    "Select chart",
+    ["Precision-Recall Curves", "Calibration Curves", "Risk-Decile Lift", "Feature Associations (LR)"],
+    label_visibility="collapsed",
+    key="chart_selector",
+)
 
-with tab_pr:
+if chart_option == "Precision-Recall Curves":
     st.markdown(
         "**Validation-set precision-recall curves** (uncalibrated probabilities). "
         "Calibration does not alter rank ordering, so PR-AUC values are the same "
@@ -144,7 +171,7 @@ with tab_pr:
             """
         )
 
-with tab_cal:
+elif chart_option == "Calibration Curves":
     st.markdown(
         "**Calibration curves on the test set** (equal-frequency bins, n = 10). "
         "Well-calibrated probabilities lie close to the diagonal."
@@ -169,7 +196,7 @@ with tab_cal:
             """.format(metrics["calibrated_threshold"])
         )
 
-with tab_decile:
+elif chart_option == "Risk-Decile Lift":
     st.markdown(
         "**Purchase rate by predicted-risk decile** (calibrated RF, test set). "
         "Decile 1 contains sessions with the highest predicted purchase probability."
@@ -192,7 +219,7 @@ with tab_decile:
         hide_index=True,
     )
 
-with tab_coef:
+elif chart_option == "Feature Associations (LR)":
     st.markdown(
         "**Top-20 Logistic Regression features by absolute coefficient magnitude.** "
         "Coefficients represent associations between early-session signals and "

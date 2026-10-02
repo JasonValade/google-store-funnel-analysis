@@ -37,6 +37,8 @@ The project addresses this through four connected workstreams:
 | Purchase | 4,661 | 43.28% from checkout |
 | **Overall** | — | **6.05%** |
 
+**Note:** The 6.05% overall funnel conversion counts only sessions that completed all four funnel stages in strict timestamp order (view_item → add_to_cart → begin_checkout → purchase). The purchase-propensity model uses a broader definition (purchase strictly after first view_item, regardless of other funnel stages), resulting in 6.09% prevalence. The 27-session difference (4,688 - 4,661) represents sessions that purchased without completing the full ordered funnel. The model's test set has 5.04% prevalence due to temporal drift. See [`reports/model_methodology.md`](reports/model_methodology.md) for detailed population definitions.
+
 The largest opportunity is the product-view-to-checkout transition: **86% of product-view sessions did not begin checkout**.
 
 The clean four-stage cart funnel was limited to dates with reliable `add_to_cart` tracking. During that period, only **34.94% of cart sessions progressed to checkout**.
@@ -60,7 +62,7 @@ It correctly surfaced the four manually validated `add_to_cart` outages from Nov
 
 ### Purchase propensity
 
-The model predicts whether a purchase will occur later in a session using only information available at the first `view_item` event.
+The model predicts whether a purchase will occur later in a session using only information available at the first `view_item` event. A comprehensive methodology report is available at [`reports/model_methodology.md`](reports/model_methodology.md).
 
 | Metric | Test result |
 |---|---:|
@@ -71,7 +73,7 @@ The model predicts whether a purchase will occur later in a session using only i
 | Top-decile lift | **3.12×** |
 | Purchases captured in top decile | **31.3%** |
 
-To prevent leakage, the pipeline uses chronological train/validation/test splits, fits preprocessing on training data only, excludes post-view behavior, and performs calibration and threshold selection on validation data only.
+The model uses chronological train/validation/test splits to prevent leakage, excludes post-view behavior, and performs calibration and threshold selection on validation data only. See the full methodology report for detailed feature construction, evaluation procedures, and economic decision context.
 
 ![Purchase rate by predicted-risk decile](images/model_decile_lift.png)
 

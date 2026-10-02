@@ -139,15 +139,15 @@ The following metrics are used in `notebooks/03_purchase_prediction.ipynb`. The 
 
 - **Definition:** Ratio of the purchase rate in the highest-scoring 10% of sessions to the overall purchase rate.
 - **Formula:** `purchase_rate_in_top_decile / overall_purchase_rate`
-- **Interpretation:** A lift of 3.13× means that sessions in the top decile convert at 3.13 times the average rate. Useful for prioritising outreach or targeting.
-- **V3 test result:** 3.13×.
+- **Interpretation:** A lift of 3.12× means that sessions in the top decile convert at 3.12 times the average rate. Useful for prioritising outreach or targeting.
+- **V3 test result:** 3.12×.
 
 ### Top-decile capture rate (purchase capture)
 
 - **Definition:** The percentage of all purchases in the test set that fall within the top-scoring 10% of sessions.
 - **Formula:** `purchases_in_top_decile / total_purchases × 100`
-- **Interpretation:** A capture rate of 31.2% means that by targeting the top decile only, one would reach 31.2% of all purchasers.
-- **V3 test result:** 31.2%.
+- **Interpretation:** A capture rate of 31.3% means that by targeting the top decile only, one would reach 31.3% of all purchasers.
+- **V3 test result:** 31.3%.
 
 ### Probability calibration
 

@@ -368,7 +368,7 @@ def decile_chart(df: pd.DataFrame) -> go.Figure:
         showlegend=False,
         **_base_layout(),
     )
-    apply_theme(fig, "Purchase Rate by Predicted-Risk Decile — Calibrated RF, Test Set")
+    apply_theme(fig, "Purchase Rate by Risk Decile — Test Set")
     return fig
 
 

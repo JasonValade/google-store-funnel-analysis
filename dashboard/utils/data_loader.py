@@ -218,39 +218,35 @@ def load_tracking_alerts() -> pd.DataFrame:
 
 
 # ── Model artifact loaders ────────────────────────────────────────────────────
+# Note: Caching disabled for model artifacts to ensure file changes are reflected immediately.
+# These files are small (KB scale) and load quickly, so caching provides minimal benefit.
 
-@st.cache_data
 def load_model_metrics() -> dict:
     """36-key JSON. Rates stored as proportions (0–1), e.g. test_pr_auc=0.140."""
     with open(_demo_path("model_metrics.json")) as fh:
         return json.load(fh)
 
 
-@st.cache_data
 def load_validation_comparison() -> pd.DataFrame:
     """3-row validation table (Dummy, LR, RF). Rates are proportions."""
     return pd.read_csv(_demo_path("model_validation_comparison.csv"))
 
 
-@st.cache_data
 def load_pr_curves() -> pd.DataFrame:
     """18 k-row long-format precision-recall curves (validation set)."""
     return pd.read_csv(_demo_path("model_pr_curves.csv"))
 
 
-@st.cache_data
 def load_calibration_curves() -> pd.DataFrame:
     """20-row calibration data (uncalibrated + sigmoid_calibrated, test set)."""
     return pd.read_csv(_demo_path("model_calibration_curves.csv"))
 
 
-@st.cache_data
 def load_test_deciles() -> pd.DataFrame:
     """10-row decile table (calibrated RF, test set). Rates are proportions."""
     return pd.read_csv(_demo_path("model_test_deciles.csv"))
 
 
-@st.cache_data
 def load_logistic_coefficients() -> pd.DataFrame:
     """20-row top-LR coefficient table. Associations, NOT causal effects."""
     return pd.read_csv(_demo_path("model_logistic_coefficients.csv"))
