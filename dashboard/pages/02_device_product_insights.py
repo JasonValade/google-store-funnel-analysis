@@ -5,23 +5,15 @@ Compares conversion rates by device and surfaces high-traffic / low-purchase
 product candidates from the session-level model feature file.
 """
 
-import sys
-from pathlib import Path
-
 import streamlit as st
-import pandas as pd
 
-_DASH = Path(__file__).resolve().parent.parent
-if str(_DASH) not in sys.path:
-    sys.path.insert(0, str(_DASH))
-
-from utils.data_loader import (
+from dashboard.utils.charts import device_bar_chart
+from dashboard.utils.data_loader import (
     load_device_funnel,
     load_model_features,
     render_page_header,
     render_sidebar,
 )
-from utils.charts import device_bar_chart
 
 render_sidebar()
 render_page_header(

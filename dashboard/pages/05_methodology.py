@@ -5,16 +5,13 @@ Provides full transparency about the analytical approach, data sources,
 modelling decisions, and limitations of this portfolio project.
 """
 
-import sys
-from pathlib import Path
-
 import streamlit as st
 
-_DASH = Path(__file__).resolve().parent.parent
-if str(_DASH) not in sys.path:
-    sys.path.insert(0, str(_DASH))
-
-from utils.data_loader import load_model_features, render_page_header, render_sidebar
+from dashboard.utils.data_loader import (
+    load_model_features,
+    render_page_header,
+    render_sidebar,
+)
 
 render_sidebar()
 render_page_header(
@@ -57,7 +54,7 @@ st.markdown(
 st.header("1. Dataset")
 
 st.markdown(
-    f"""
+    """
     **Source:** `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
 
     The Google Merchandise Store GA4 e-commerce export is a publicly available,
@@ -85,7 +82,7 @@ st.divider()
 st.header("2. Funnel Methodology")
 
 st.markdown(
-    f"""
+    """
     ### Primary ordered funnel
     Sessions are classified as reaching a funnel stage if they contain the
     corresponding GA4 event **in order**: `view_item` → `begin_checkout` → `purchase`.

@@ -5,7 +5,6 @@ import pytest
 from plotly.graph_objects import Figure
 
 from dashboard.utils.charts import (
-    C,
     calibration_chart,
     coefficient_chart,
     decile_chart,

@@ -5,23 +5,15 @@ Shows weekly purchase conversion rates and the primary ordered funnel
 with date-range filtering and downloadable data.
 """
 
-import sys
-from pathlib import Path
-
 import streamlit as st
-import pandas as pd
 
-_DASH = Path(__file__).resolve().parent.parent
-if str(_DASH) not in sys.path:
-    sys.path.insert(0, str(_DASH))
-
-from utils.data_loader import (
-    load_weekly_conversion,
+from dashboard.utils.charts import funnel_chart, weekly_conversion_chart
+from dashboard.utils.data_loader import (
     load_device_funnel,
+    load_weekly_conversion,
     render_page_header,
     render_sidebar,
 )
-from utils.charts import weekly_conversion_chart, funnel_chart
 
 render_sidebar()
 render_page_header(

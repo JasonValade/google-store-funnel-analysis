@@ -8,18 +8,14 @@ hybrid rolling-baseline algorithm.
 This is an offline prototype — not a live alerting system.
 """
 
-import sys
-from pathlib import Path
-
 import streamlit as st
-import pandas as pd
 
-_DASH = Path(__file__).resolve().parent.parent
-if str(_DASH) not in sys.path:
-    sys.path.insert(0, str(_DASH))
-
-from utils.data_loader import load_tracking_alerts, render_page_header, render_sidebar
-from utils.charts import tracking_scatter
+from dashboard.utils.charts import tracking_scatter
+from dashboard.utils.data_loader import (
+    load_tracking_alerts,
+    render_page_header,
+    render_sidebar,
+)
 
 render_sidebar()
 render_page_header(

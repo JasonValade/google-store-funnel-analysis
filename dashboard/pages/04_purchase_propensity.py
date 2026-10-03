@@ -8,32 +8,26 @@ artifacts — notebook outputs are never parsed.
 No live predictions are made on this page.
 """
 
-import sys
-from pathlib import Path
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 
-import streamlit as st
 import pandas as pd
+import streamlit as st
 
-_DASH = Path(__file__).resolve().parent.parent
-if str(_DASH) not in sys.path:
-    sys.path.insert(0, str(_DASH))
-
-from utils.data_loader import (
-    load_model_metrics,
-    load_validation_comparison,
-    load_pr_curves,
+from dashboard.utils.charts import (
+    calibration_chart,
+    coefficient_chart,
+    decile_chart,
+    pr_curves_chart,
+)
+from dashboard.utils.data_loader import (
     load_calibration_curves,
-    load_test_deciles,
     load_logistic_coefficients,
+    load_model_metrics,
+    load_pr_curves,
+    load_test_deciles,
+    load_validation_comparison,
     render_page_header,
     render_sidebar,
-)
-from utils.charts import (
-    pr_curves_chart,
-    calibration_chart,
-    decile_chart,
-    coefficient_chart,
 )
 
 render_sidebar()

@@ -6,9 +6,8 @@ raw data to actionable insights. It demonstrates the data science process
 from exploration to modeling to business recommendations.
 """
 
-from pathlib import Path
-
 import streamlit as st
+
 from dashboard.utils.data_loader import inject_global_styles, render_page_header
 
 
