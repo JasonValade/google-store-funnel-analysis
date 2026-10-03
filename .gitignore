@@ -36,3 +36,23 @@ credentials.json
 # Other
 .vscode/
 .idea/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+
+# Pre-commit
+.pre-commit-cache/
+
+# Build and dist
+build/
+dist/
+*.egg-info/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json

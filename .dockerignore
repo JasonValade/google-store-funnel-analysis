@@ -1,0 +1,93 @@
+# Docker ignore file to speed up builds and reduce image size
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.mypy_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Git
+.git/
+.gitignore
+.github/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data (except demo artifacts)
+data/*
+!data/processed/
+data/processed/*
+!data/processed/demo/
+data/processed/demo/*
+!data/processed/demo/*.csv
+!data/processed/demo/*.csv.gz
+!data/processed/demo/*.json
+
+# Credentials
+*.json
+*.key
+service-account-*.json
+credentials.json
+.env
+!data/processed/demo/*.json
+
+# Documentation (not needed in runtime)
+docs/
+reports/
+images/
+*.md
+!README.md
+
+# SQL (not needed in runtime)
+sql/
+
+# Notebooks (not needed in runtime)
+notebooks/
+
+# Pre-commit
+.pre-commit-config.yaml
+.pre-commit-cache/
+
+# CI/CD
+.gitlab-ci.yml
+.travis.yml
+
+# Docker files
+Dockerfile
+.dockerignore
+docker-compose.yml

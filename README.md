@@ -1,8 +1,14 @@
 # Google Merchandise Store Funnel Analysis
 
+[![CI/CD](https://github.com/JasonValade/google-store-funnel-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/JasonValade/google-store-funnel-analysis/actions/workflows/ci.yml)
+[![Python Version](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
 An end-to-end analytics portfolio project that turns 4.3 million Google Analytics 4 events into funnel insights, tracking-health alerts, and a purchase-propensity model.
 
-[**View the live Streamlit dashboard**](https://app-store-funnel-analysis.streamlit.app/) · [Metric definitions](docs/metric_definitions.md) · [Data dictionary](docs/data_dictionary.md)
+[**View the live Streamlit dashboard**](https://app-store-funnel-analysis.streamlit.app/) · [Executive Summary](docs/executive_summary.md) · [Technical Methodology](docs/technical_methodology.md) · [Feature Documentation](docs/feature_documentation.md)
 
 ![Primary ordered conversion funnel](images/primary_conversion_funnel.png)
 
@@ -94,14 +100,23 @@ The model uses chronological train/validation/test splits to prevent leakage, ex
 
 ```text
 .
+├── .github/workflows/    # CI/CD pipeline configuration
 ├── app.py                 # Streamlit Cloud entry point
-├── dashboard/            # Six-page results application
+├── dashboard/            # Seven-page results application
+│   ├── pages/           # Dashboard page components
+│   └── utils/           # Reusable chart and data-loading utilities
 ├── data/processed/demo/  # Deployment-safe analytical artifacts
-├── docs/                 # Metric definitions and data dictionary
+├── docs/                 # Documentation (executive summary, methodology, features)
 ├── images/               # Exported analysis visuals
 ├── notebooks/            # Statistical, monitoring, and ML workflows
 ├── sql/                  # BigQuery analysis, feature, and validation queries
-└── requirements.txt
+├── tests/                # Unit tests for dashboard utilities
+├── pyproject.toml       # Modern Python packaging with dev dependencies
+├── Dockerfile           # Containerized deployment configuration
+├── docker-compose.yml   # Docker Compose orchestration
+├── Makefile             # Common development commands
+├── .pre-commit-config.yaml # Pre-commit hooks for code quality
+└── requirements.txt     # Legacy requirements (for compatibility)
 ```
 
 Notable files:
@@ -112,10 +127,25 @@ Notable files:
 - [`sql/13_model_feature_validation.sql`](sql/13_model_feature_validation.sql) — feature quality checks
 - [`notebooks/03_purchase_prediction.ipynb`](notebooks/03_purchase_prediction.ipynb) — model training and evaluation
 - [`dashboard/README.md`](dashboard/README.md) — dashboard pages and artifact inputs
+- [`dashboard/pages/06_analysis_journey.py`](dashboard/pages/06_analysis_journey.py) — complete analytical walkthrough
+- [`docs/executive_summary.md`](docs/executive_summary.md) — business-focused summary
+- [`docs/executive_presentation.md`](docs/executive_presentation.md) — executive slide deck
+- [`docs/visual_story.md`](docs/visual_story.md) — narrative visual walkthrough
+- [`docs/ab_testing_framework.md`](docs/ab_testing_framework.md) — A/B testing guide
+- [`docs/business_requirements.md`](docs/business_requirements.md) — complete business requirements
+- [`docs/project_retrospective.md`](docs/project_retrospective.md) — lessons learned and skills demonstrated
+- [`docs/skills_matrix.md`](docs/skills_matrix.md) — comprehensive skills catalog
+- [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md) — industry-standard model documentation (NEW)
+- [`docs/technical_methodology.md`](docs/technical_methodology.md) — deep technical methodology
+- [`docs/feature_documentation.md`](docs/feature_documentation.md) — business feature definitions
+- [`tests/test_data_loader.py`](tests/test_data_loader.py) — data loader unit tests
+- [`tests/test_charts.py`](tests/test_charts.py) — chart builder unit tests
 
 ## Run the dashboard locally
 
 Python 3.11 or newer is recommended.
+
+### Quick start with pip
 
 ```bash
 git clone https://github.com/JasonValade/google-store-funnel-analysis.git
@@ -123,11 +153,29 @@ cd google-store-funnel-analysis
 
 python3 -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements.txt
+python -m pip install -e .
 python -m streamlit run app.py
 ```
 
+### Using the Makefile (recommended)
+
+```bash
+make install-dev    # Install development dependencies
+make run            # Run the Streamlit dashboard
+```
+
 Open `http://localhost:8501`. The dashboard uses pre-computed files from `data/processed/demo/`; BigQuery credentials and environment variables are not required.
+
+### Using Docker
+
+```bash
+make docker-build   # Build the Docker image
+make docker-run     # Run the container
+# Or with docker-compose:
+make docker-compose-up
+```
+
+Open `http://localhost:8501`.
 
 ## Reproduce the analysis
 
@@ -140,6 +188,71 @@ python -m jupyter notebook notebooks/03_purchase_prediction.ipynb
 ```
 
 Do not commit raw exports, service-account files, or credentials. Only small, aggregated, non-sensitive demo artifacts belong in `data/processed/demo/`.
+
+## Development
+
+This project uses modern Python development tooling:
+
+### Code quality
+
+Pre-commit hooks ensure code quality:
+```bash
+make pre-commit-install  # Install pre-commit hooks
+```
+
+Hooks include:
+- **Ruff** - Fast Python linter and formatter
+- **Black** - Code formatting
+- **MyPy** - Static type checking
+- **Bandit** - Security linting
+
+Manual checks:
+```bash
+make lint          # Run all linters
+make format        # Format code
+make check         # Run all quality checks
+```
+
+### Testing
+```bash
+make test          # Run tests
+make test-cov      # Run tests with coverage report
+```
+
+### Docker
+```bash
+make docker-build       # Build Docker image
+make docker-run         # Run container
+make docker-compose-up  # Run with docker-compose
+```
+
+## Documentation
+
+This project includes comprehensive documentation for different audiences:
+
+### 📋 Quick Start
+- **[PROJECT_SUMMARY](docs/PROJECT_SUMMARY.md)** - Complete overview with documentation index, metrics, and final assessment
+
+### Business-Focused
+- **[Executive Summary](docs/executive_summary.md)** - Business-focused overview with key findings, recommendations, and ROI estimates
+- **[Executive Presentation](docs/executive_presentation.md)** - 16-slide deck for executive presentations and stakeholder meetings
+- **[Visual Story](docs/visual_story.md)** - Narrative walkthrough with ASCII art visualizations for memorable storytelling
+- **[Business Requirements](docs/business_requirements.md)** - Complete business requirements document with success criteria
+
+### Technical-Focused
+- **[Technical Methodology](docs/technical_methodology.md)** - Deep dive into the analytical journey, technical decisions, and rationale
+- **[Feature Documentation](docs/feature_documentation.md)** - Business-friendly definitions of all model features with interpretation
+- **[A/B Testing Framework](docs/ab_testing_framework.md)** - Complete guide for validating recommendations through experiments
+- **[Model Card](docs/MODEL_CARD.md)** - Industry-standard model documentation (performance, ethics, deployment) ⭐ NEW
+
+### Project-Focused
+- **[Project Retrospective](docs/project_retrospective.md)** - Lessons learned, challenges faced, and skills demonstrated
+- **[Skills Matrix](docs/skills_matrix.md)** - Comprehensive catalog of demonstrated skills and competencies
+
+### Reference
+- **[Metric Definitions](docs/metric_definitions.md)** - Detailed definitions of business metrics
+- **[Data Dictionary](docs/data_dictionary.md)** - Field descriptions and data structure
+- **[Model Methodology](reports/model_methodology.md)** - ML-specific details on model development
 
 ## Recommendations
 

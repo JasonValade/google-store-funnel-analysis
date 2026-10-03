@@ -51,6 +51,11 @@ def main() -> None:
             title="Methodology & Limitations",
             icon="📋",
         ),
+        st.Page(
+            base_dir / "pages" / "06_analysis_journey.py",
+            title="Analysis Journey",
+            icon="🧭",
+        ),
     ]
     navigation = st.navigation(pages)
     navigation.run()

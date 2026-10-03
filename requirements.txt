@@ -1,16 +1,19 @@
-pandas
-numpy
-matplotlib
-seaborn
-scipy
-statsmodels
-scikit-learn
-jupyter
-notebook
-ipython
-google-cloud-bigquery  # optional: only if you plan to run queries programmatically
-pyyaml
+# Core dependencies (version-pinned for reproducibility)
+pandas==2.2.2
+numpy==1.26.4
+matplotlib==3.9.0
+seaborn==0.13.2
+scipy==1.13.1
+statsmodels==0.14.2
+scikit-learn==1.5.1
+jupyter==1.0.0
+notebook==7.2.1
+ipython==8.26.0
+pyyaml==6.0.1
 
 # V4 Dashboard
-streamlit>=1.35
-plotly>=5.18
+streamlit==1.37.0
+plotly==5.22.0
+
+# Optional: BigQuery integration (uncomment if needed)
+# google-cloud-bigquery==3.25.0
