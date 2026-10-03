@@ -33,8 +33,7 @@ metadata_missing_definition = (
     "or `first_item_category` missing/`'(unknown)'`"
 )
 metadata_missing_summary = (
-    f"{metadata_missing_count:,} of {len(features_df):,} sessions "
-    f"({metadata_missing_pct:.2f}%)"
+    f"{metadata_missing_count:,} of {len(features_df):,} sessions " f"({metadata_missing_pct:.2f}%)"
 )
 
 st.divider()

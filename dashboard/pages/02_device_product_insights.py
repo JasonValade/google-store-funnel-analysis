@@ -34,7 +34,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-device_df   = load_device_funnel()
+device_df = load_device_funnel()
 features_df = load_model_features()
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -46,15 +46,17 @@ st.plotly_chart(device_bar_chart(device_df), width="stretch", theme="streamlit")
 
 display = device_df.copy()
 display["device_category"] = display["device_category"].str.capitalize()
-display = display.rename(columns={
-    "device_category":           "Device",
-    "product_view_sessions":     "Views",
-    "checkout_sessions":         "Checkouts",
-    "purchase_sessions":         "Purchases",
-    "view_to_checkout_rate":     "View→Checkout %",
-    "checkout_to_purchase_rate": "Checkout→Purchase %",
-    "overall_purchase_rate":     "Overall %",
-})
+display = display.rename(
+    columns={
+        "device_category": "Device",
+        "product_view_sessions": "Views",
+        "checkout_sessions": "Checkouts",
+        "purchase_sessions": "Purchases",
+        "view_to_checkout_rate": "View→Checkout %",
+        "checkout_to_purchase_rate": "Checkout→Purchase %",
+        "overall_purchase_rate": "Overall %",
+    }
+)
 st.dataframe(
     display,
     width="stretch",
@@ -97,7 +99,7 @@ with st.expander("🔍 Filters", expanded=True):
 
     with fc1:
         device_opts = ["All devices"] + sorted(features_df["device_category"].dropna().unique())
-        device_sel  = st.selectbox("Device", device_opts)
+        device_sel = st.selectbox("Device", device_opts)
 
     with fc2:
         # Clean category list
@@ -108,12 +110,16 @@ with st.expander("🔍 Filters", expanded=True):
             .unique()
         )
         cat_opts = ["All categories"] + sorted(cats)
-        cat_sel  = st.selectbox("Category", cat_opts)
+        cat_sel = st.selectbox("Category", cat_opts)
 
     with fc3:
         min_sessions = st.slider(
-            "Minimum sessions", min_value=5, max_value=500, value=50, step=5,
-            help="Exclude products with fewer sessions to reduce noise."
+            "Minimum sessions",
+            min_value=5,
+            max_value=500,
+            value=50,
+            step=5,
+            help="Exclude products with fewer sessions to reduce noise.",
         )
 
     with fc4:
@@ -159,8 +165,7 @@ if product_agg.empty:
 
 # ── Summary metrics ────────────────────────────────────────────────────────────
 weighted_rate = (
-    product_agg["sessions_purchasing_later"].sum()
-    / product_agg["product_view_sessions"].sum()
+    product_agg["sessions_purchasing_later"].sum() / product_agg["product_view_sessions"].sum()
 )
 
 sm1, sm2, sm3 = st.columns(3)
@@ -170,20 +175,24 @@ sm3.metric("Weighted session purchase rate", f"{weighted_rate*100:.2f}%")
 
 # ── Display table ─────────────────────────────────────────────────────────────
 display_agg = product_agg.copy()
-display_agg["session_purchase_rate_pct"] = (
-    display_agg["session_purchase_rate"] * 100
-).round(2)
+display_agg["session_purchase_rate_pct"] = (display_agg["session_purchase_rate"] * 100).round(2)
 
 st.dataframe(
     display_agg[
-        ["product", "product_view_sessions",
-         "sessions_purchasing_later", "session_purchase_rate_pct"]
-    ].rename(columns={
-        "product":                    "Product",
-        "product_view_sessions":      "Product-view sessions",
-        "sessions_purchasing_later":  "Sessions purchasing later",
-        "session_purchase_rate_pct":  "Session purchase rate %",
-    }),
+        [
+            "product",
+            "product_view_sessions",
+            "sessions_purchasing_later",
+            "session_purchase_rate_pct",
+        ]
+    ].rename(
+        columns={
+            "product": "Product",
+            "product_view_sessions": "Product-view sessions",
+            "sessions_purchasing_later": "Sessions purchasing later",
+            "session_purchase_rate_pct": "Session purchase rate %",
+        }
+    ),
     width="stretch",
     hide_index=True,
     column_config={
@@ -203,14 +212,15 @@ st.caption(
 
 # ── Download ───────────────────────────────────────────────────────────────────
 download_agg = display_agg[
-    ["product", "product_view_sessions",
-     "sessions_purchasing_later", "session_purchase_rate_pct"]
-].rename(columns={
-    "product":                    "product",
-    "product_view_sessions":      "product_view_sessions",
-    "sessions_purchasing_later":  "sessions_purchasing_later",
-    "session_purchase_rate_pct":  "session_purchase_rate_pct",
-})
+    ["product", "product_view_sessions", "sessions_purchasing_later", "session_purchase_rate_pct"]
+].rename(
+    columns={
+        "product": "product",
+        "product_view_sessions": "product_view_sessions",
+        "sessions_purchasing_later": "sessions_purchasing_later",
+        "session_purchase_rate_pct": "session_purchase_rate_pct",
+    }
+)
 
 st.download_button(
     label="⬇️ Download product table as CSV",

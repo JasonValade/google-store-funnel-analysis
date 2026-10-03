@@ -47,23 +47,31 @@ STATUS_LABELS = {
 }
 
 alerts_df["event_label"] = alerts_df["event_name"].map(EVENT_LABELS).fillna(alerts_df["event_name"])
-alerts_df["status_label"] = alerts_df["tracking_status"].map(STATUS_LABELS).fillna(alerts_df["tracking_status"])
+alerts_df["status_label"] = (
+    alerts_df["tracking_status"].map(STATUS_LABELS).fillna(alerts_df["tracking_status"])
+)
 
 # ── KPI cards ─────────────────────────────────────────────────────────────────
 st.subheader("Alert Summary")
 
-n_critical  = int((alerts_df["tracking_status"] == "CRITICAL_TRACKING_OUTAGE").sum())
-n_likely    = int((alerts_df["tracking_status"] == "LIKELY_TRAFFIC_DECLINE").sum())
-n_total     = len(alerts_df)
-n_events    = alerts_df["event_name"].nunique()
+n_critical = int((alerts_df["tracking_status"] == "CRITICAL_TRACKING_OUTAGE").sum())
+n_likely = int((alerts_df["tracking_status"] == "LIKELY_TRAFFIC_DECLINE").sum())
+n_total = len(alerts_df)
+n_events = alerts_df["event_name"].nunique()
 
 k1, k2, k3, k4 = st.columns(4)
-k1.metric("Critical tracking outages", n_critical,
-          help="event_count = 0 while page-view traffic was normal.")
-k2.metric("Likely traffic declines",   n_likely,
-          help="Event ratio low but consistent with a site-wide traffic drop.")
-k3.metric("Affected dates",            n_total)
-k4.metric("Distinct events affected",  n_events)
+k1.metric(
+    "Critical tracking outages",
+    n_critical,
+    help="event_count = 0 while page-view traffic was normal.",
+)
+k2.metric(
+    "Likely traffic declines",
+    n_likely,
+    help="Event ratio low but consistent with a site-wide traffic drop.",
+)
+k3.metric("Affected dates", n_total)
+k4.metric("Distinct events affected", n_events)
 
 st.divider()
 
@@ -73,11 +81,11 @@ with st.expander("🔍 Filters", expanded=True):
 
     with fa1:
         event_opts = ["All events"] + sorted(alerts_df["event_label"].unique().tolist())
-        event_sel  = st.selectbox("Event name", event_opts)
+        event_sel = st.selectbox("Event name", event_opts)
 
     with fa2:
         status_opts = ["All statuses"] + sorted(alerts_df["status_label"].unique().tolist())
-        status_sel  = st.selectbox("Tracking status", status_opts)
+        status_sel = st.selectbox("Tracking status", status_opts)
 
 filtered = alerts_df.copy()
 if event_sel != "All events":
@@ -133,30 +141,39 @@ display_df = filtered.copy()
 display_df["date"] = display_df["date"].dt.strftime("%Y-%m-%d")
 
 # Format ratio columns to 3 d.p.
-ratio_cols = [
-    "event_volume_ratio", "page_view_ratio", "traffic_adjusted_event_ratio"
-]
+ratio_cols = ["event_volume_ratio", "page_view_ratio", "traffic_adjusted_event_ratio"]
 for col in ratio_cols:
     display_df[col] = display_df[col].round(3)
 
-display_df = display_df.rename(columns={
-    "date":                          "Date",
-    "event_label":                   "Event",
-    "event_count":                   "Observed",
-    "expected_event_count":          "Expected",
-    "event_volume_ratio":            "Event ratio",
-    "event_volume_z_score":          "Z-score",
-    "page_view_count":               "Page views",
-    "expected_page_view_count":      "Expected PV",
-    "page_view_ratio":               "PV ratio",
-    "traffic_adjusted_event_ratio":  "Traffic-adjusted ratio",
-    "status_label":                  "Status",
-})
+display_df = display_df.rename(
+    columns={
+        "date": "Date",
+        "event_label": "Event",
+        "event_count": "Observed",
+        "expected_event_count": "Expected",
+        "event_volume_ratio": "Event ratio",
+        "event_volume_z_score": "Z-score",
+        "page_view_count": "Page views",
+        "expected_page_view_count": "Expected PV",
+        "page_view_ratio": "PV ratio",
+        "traffic_adjusted_event_ratio": "Traffic-adjusted ratio",
+        "status_label": "Status",
+    }
+)
 
 display_df = display_df[
     [
-        "Date", "Event", "Status", "Observed", "Expected", "Event ratio",
-        "Page views", "Expected PV", "PV ratio", "Traffic-adjusted ratio", "Z-score",
+        "Date",
+        "Event",
+        "Status",
+        "Observed",
+        "Expected",
+        "Event ratio",
+        "Page views",
+        "Expected PV",
+        "PV ratio",
+        "Traffic-adjusted ratio",
+        "Z-score",
     ]
 ]
 for col in ["Observed", "Expected", "Page views", "Expected PV"]:

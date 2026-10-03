@@ -12,30 +12,30 @@ import plotly.graph_objects as go
 
 # ── Color-blind-friendly palette (Okabe-Ito) ─────────────────────────────────
 C = {
-    "blue":    "#0072B2",
-    "orange":  "#E69F00",
-    "green":   "#009E73",
-    "red":     "#D55E00",
-    "purple":  "#CC79A7",
-    "sky":     "#56B4E9",
-    "yellow":  "#F0E442",
-    "gray":    "#999999",
-    "black":   "#000000",
+    "blue": "#0072B2",
+    "orange": "#E69F00",
+    "green": "#009E73",
+    "red": "#D55E00",
+    "purple": "#CC79A7",
+    "sky": "#56B4E9",
+    "yellow": "#F0E442",
+    "gray": "#999999",
+    "black": "#000000",
 }
 
 STATUS_COLORS = {
     "CRITICAL_TRACKING_OUTAGE": C["red"],
-    "LIKELY_TRAFFIC_DECLINE":   C["orange"],
+    "LIKELY_TRAFFIC_DECLINE": C["orange"],
 }
 
 MODEL_COLORS = {
     "LogisticRegression": C["blue"],
-    "RandomForest":       C["orange"],
-    "DummyClassifier":    C["gray"],
+    "RandomForest": C["orange"],
+    "DummyClassifier": C["gray"],
 }
 
 CALIB_COLORS = {
-    "uncalibrated":       C["orange"],
+    "uncalibrated": C["orange"],
     "sigmoid_calibrated": C["blue"],
 }
 
@@ -66,18 +66,24 @@ def apply_theme(fig: go.Figure, title: str = "") -> go.Figure:
         **_base_layout(),
     )
     fig.update_xaxes(
-        showgrid=False, zeroline=False,
-        linecolor="rgba(148,163,184,0.35)", automargin=True,
+        showgrid=False,
+        zeroline=False,
+        linecolor="rgba(148,163,184,0.35)",
+        automargin=True,
         title_font=dict(size=13),
     )
     fig.update_yaxes(
-        showgrid=True, gridcolor="rgba(148,163,184,0.18)", zeroline=False,
-        automargin=True, title_font=dict(size=13),
+        showgrid=True,
+        gridcolor="rgba(148,163,184,0.18)",
+        zeroline=False,
+        automargin=True,
+        title_font=dict(size=13),
     )
     return fig
 
 
 # ── Funnel charts ─────────────────────────────────────────────────────────────
+
 
 def funnel_chart(
     stages: list[str],
@@ -85,22 +91,25 @@ def funnel_chart(
     title: str = "Purchase Funnel",
 ) -> go.Figure:
     """Vertical funnel chart."""
-    fig = go.Figure(go.Funnel(
-        y=stages,
-        x=values,
-        # Let Plotly move labels outside narrow stages so checkout and purchase
-        # values remain readable when the chart is rendered in a small column.
-        textposition="auto",
-        textinfo="value+percent initial",
-        textfont=dict(size=13, color="rgba(245,245,245,0.96)"),
-        marker=dict(color=[C["blue"], C["sky"], C["green"]]),
-        connector=dict(line=dict(color="rgba(127,127,127,0.5)", width=1)),
-    ))
+    fig = go.Figure(
+        go.Funnel(
+            y=stages,
+            x=values,
+            # Let Plotly move labels outside narrow stages so checkout and purchase
+            # values remain readable when the chart is rendered in a small column.
+            textposition="auto",
+            textinfo="value+percent initial",
+            textfont=dict(size=13, color="rgba(245,245,245,0.96)"),
+            marker=dict(color=[C["blue"], C["sky"], C["green"]]),
+            connector=dict(line=dict(color="rgba(127,127,127,0.5)", width=1)),
+        )
+    )
     fig.update_layout(title=dict(text=title, font=dict(size=16)), **_base_layout())
     return fig
 
 
 # ── Weekly conversion line chart ─────────────────────────────────────────────
+
 
 def weekly_conversion_chart(
     df: pd.DataFrame,
@@ -112,15 +121,17 @@ def weekly_conversion_chart(
     """
     fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=df["week_start"],
-        y=df["purchase_conversion_rate"],
-        mode="lines+markers",
-        name="Purchase conversion rate",
-        line=dict(color=C["blue"], width=2.5),
-        marker=dict(size=7),
-        hovertemplate="%{x|%b %d}<br>Conversion: <b>%{y:.2f}%</b><extra></extra>",
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=df["week_start"],
+            y=df["purchase_conversion_rate"],
+            mode="lines+markers",
+            name="Purchase conversion rate",
+            line=dict(color=C["blue"], width=2.5),
+            marker=dict(size=7),
+            hovertemplate="%{x|%b %d}<br>Conversion: <b>%{y:.2f}%</b><extra></extra>",
+        )
+    )
 
     # December peak annotation
     peak_row = df[df["week_start"].astype(str).str.startswith(peak_week)]
@@ -153,6 +164,7 @@ def weekly_conversion_chart(
 
 # ── Device bar chart ─────────────────────────────────────────────────────────
 
+
 def device_bar_chart(df: pd.DataFrame) -> go.Figure:
     """
     Grouped bar chart of overall conversion rate by device.
@@ -161,14 +173,16 @@ def device_bar_chart(df: pd.DataFrame) -> go.Figure:
     df_sorted = df.sort_values("overall_purchase_rate", ascending=False)
     colors = [C["blue"], C["sky"], C["orange"]]
 
-    fig = go.Figure(go.Bar(
-        x=df_sorted["device_category"].str.capitalize(),
-        y=df_sorted["overall_purchase_rate"],
-        marker_color=colors[: len(df_sorted)],
-        text=df_sorted["overall_purchase_rate"].apply(lambda v: f"{v:.2f}%"),
-        textposition="outside",
-        hovertemplate="<b>%{x}</b><br>Conversion rate: <b>%{y:.2f}%</b><extra></extra>",
-    ))
+    fig = go.Figure(
+        go.Bar(
+            x=df_sorted["device_category"].str.capitalize(),
+            y=df_sorted["overall_purchase_rate"],
+            marker_color=colors[: len(df_sorted)],
+            text=df_sorted["overall_purchase_rate"].apply(lambda v: f"{v:.2f}%"),
+            textposition="outside",
+            hovertemplate="<b>%{x}</b><br>Conversion rate: <b>%{y:.2f}%</b><extra></extra>",
+        )
+    )
 
     fig.update_layout(
         xaxis_title="Device",
@@ -184,6 +198,7 @@ def device_bar_chart(df: pd.DataFrame) -> go.Figure:
 
 # ── Tracking health scatter ───────────────────────────────────────────────────
 
+
 def tracking_scatter(df: pd.DataFrame) -> go.Figure:
     """
     Scatter plot of tracking ratios per alert date.
@@ -192,29 +207,38 @@ def tracking_scatter(df: pd.DataFrame) -> go.Figure:
     x_labels = df["date"].dt.strftime("%Y-%m-%d").tolist()
 
     ratio_cols = [
-        ("event_volume_ratio",           "Event-volume ratio",           C["red"],    "circle"),
-        ("page_view_ratio",              "Page-view ratio",              C["blue"],   "square"),
-        ("traffic_adjusted_event_ratio", "Traffic-adjusted event ratio", C["green"],  "diamond"),
+        ("event_volume_ratio", "Event-volume ratio", C["red"], "circle"),
+        ("page_view_ratio", "Page-view ratio", C["blue"], "square"),
+        ("traffic_adjusted_event_ratio", "Traffic-adjusted event ratio", C["green"], "diamond"),
     ]
 
     fig = go.Figure()
     for col, label, color, symbol in ratio_cols:
-        fig.add_trace(go.Scatter(
-            x=x_labels,
-            y=df[col],
-            mode="markers",
-            name=label,
-            marker=dict(color=color, symbol=symbol, size=12, line=dict(width=1.5, color="rgba(127,127,127,0.6)")),
-            customdata=df[["event_label", "status_label", "event_name", "tracking_status"]].values,
-            hovertemplate=(
-                "<b>%{x}</b><br>"
-                "Event: %{customdata[0]}<br>"
-                f"{label}: <b>%{{y:.3f}}</b><br>"
-                "Status: %{customdata[1]}<br>"
-                "<span style='opacity:0.75'>Raw event: %{customdata[2]} · Raw status: %{customdata[3]}</span>"
-                "<extra></extra>"
-            ),
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=x_labels,
+                y=df[col],
+                mode="markers",
+                name=label,
+                marker=dict(
+                    color=color,
+                    symbol=symbol,
+                    size=12,
+                    line=dict(width=1.5, color="rgba(127,127,127,0.6)"),
+                ),
+                customdata=df[
+                    ["event_label", "status_label", "event_name", "tracking_status"]
+                ].values,
+                hovertemplate=(
+                    "<b>%{x}</b><br>"
+                    "Event: %{customdata[0]}<br>"
+                    f"{label}: <b>%{{y:.3f}}</b><br>"
+                    "Status: %{customdata[1]}<br>"
+                    "<span style='opacity:0.75'>Raw event: %{customdata[2]} · Raw status: %{customdata[3]}</span>"
+                    "<extra></extra>"
+                ),
+            )
+        )
 
     # Reference line at 1.0
     fig.add_hline(
@@ -238,6 +262,7 @@ def tracking_scatter(df: pd.DataFrame) -> go.Figure:
 
 # ── PR curves ────────────────────────────────────────────────────────────────
 
+
 def pr_curves_chart(df: pd.DataFrame, no_skill: float) -> go.Figure:
     """
     Precision-recall curves for LR and RF (validation set).
@@ -246,26 +271,31 @@ def pr_curves_chart(df: pd.DataFrame, no_skill: float) -> go.Figure:
     fig = go.Figure()
 
     # No-skill baseline
-    fig.add_trace(go.Scatter(
-        x=[0, 1], y=[no_skill, no_skill],
-        mode="lines",
-        name=f"No-skill baseline (PR-AUC = {no_skill:.3f})",
-        line=dict(color=C["gray"], dash="dash", width=1.5),
-        hoverinfo="skip",
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=[0, 1],
+            y=[no_skill, no_skill],
+            mode="lines",
+            name=f"No-skill baseline (PR-AUC = {no_skill:.3f})",
+            line=dict(color=C["gray"], dash="dash", width=1.5),
+            hoverinfo="skip",
+        )
+    )
 
     for model_name, color in MODEL_COLORS.items():
         sub = df[df["model"] == model_name].sort_values("recall")
         if sub.empty:
             continue
-        fig.add_trace(go.Scatter(
-            x=sub["recall"],
-            y=sub["precision"],
-            mode="lines",
-            name=model_name,
-            line=dict(color=color, width=2.5),
-            hovertemplate="Recall: %{x:.3f}<br>Precision: %{y:.3f}<extra></extra>",
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=sub["recall"],
+                y=sub["precision"],
+                mode="lines",
+                name=model_name,
+                line=dict(color=color, width=2.5),
+                hovertemplate="Recall: %{x:.3f}<br>Precision: %{y:.3f}<extra></extra>",
+            )
+        )
 
     fig.update_layout(
         xaxis_title="Recall",
@@ -281,6 +311,7 @@ def pr_curves_chart(df: pd.DataFrame, no_skill: float) -> go.Figure:
 
 # ── Calibration curves ────────────────────────────────────────────────────────
 
+
 def calibration_chart(df: pd.DataFrame) -> go.Figure:
     """
     Calibration curves (uncalibrated and sigmoid calibrated) on the test set.
@@ -288,31 +319,36 @@ def calibration_chart(df: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
 
     # Perfect calibration reference
-    fig.add_trace(go.Scatter(
-        x=[0, 1], y=[0, 1],
-        mode="lines",
-        name="Perfect calibration",
-        line=dict(color=C["gray"], dash="dash", width=1.5),
-        hoverinfo="skip",
-    ))
+    fig.add_trace(
+        go.Scatter(
+            x=[0, 1],
+            y=[0, 1],
+            mode="lines",
+            name="Perfect calibration",
+            line=dict(color=C["gray"], dash="dash", width=1.5),
+            hoverinfo="skip",
+        )
+    )
 
     label_map = {
-        "uncalibrated":       "Uncalibrated",
+        "uncalibrated": "Uncalibrated",
         "sigmoid_calibrated": "Sigmoid calibrated",
     }
     symbol_map = {"uncalibrated": "square", "sigmoid_calibrated": "circle"}
 
     for cal_type, color in CALIB_COLORS.items():
         sub = df[df["calibration_type"] == cal_type]
-        fig.add_trace(go.Scatter(
-            x=sub["mean_predicted_probability"],
-            y=sub["observed_positive_fraction"],
-            mode="lines+markers",
-            name=label_map.get(cal_type, cal_type),
-            line=dict(color=color, width=2.5),
-            marker=dict(symbol=symbol_map.get(cal_type, "circle"), size=8),
-            hovertemplate="Predicted: %{x:.4f}<br>Observed: %{y:.4f}<extra></extra>",
-        ))
+        fig.add_trace(
+            go.Scatter(
+                x=sub["mean_predicted_probability"],
+                y=sub["observed_positive_fraction"],
+                mode="lines+markers",
+                name=label_map.get(cal_type, cal_type),
+                line=dict(color=color, width=2.5),
+                marker=dict(symbol=symbol_map.get(cal_type, "circle"), size=8),
+                hovertemplate="Predicted: %{x:.4f}<br>Observed: %{y:.4f}<extra></extra>",
+            )
+        )
 
     fig.update_layout(
         xaxis_title="Mean predicted probability",
@@ -327,6 +363,7 @@ def calibration_chart(df: pd.DataFrame) -> go.Figure:
 
 # ── Decile lift bar chart ─────────────────────────────────────────────────────
 
+
 def decile_chart(df: pd.DataFrame) -> go.Figure:
     """
     Purchase rate by risk decile bar chart (test set).
@@ -335,21 +372,23 @@ def decile_chart(df: pd.DataFrame) -> go.Figure:
     overall_pct = float(df["overall_test_purchase_rate"].iloc[0]) * 100
     pct = (df["purchase_rate"] * 100).round(2)
 
-    fig = go.Figure(go.Bar(
-        x=df["risk_decile"],
-        y=pct,
-        marker_color=C["blue"],
-        text=pct.apply(lambda v: f"{v:.1f}%"),
-        textposition="outside",
-        customdata=df[["session_count", "purchase_count", "lift"]].values,
-        hovertemplate=(
-            "Decile %{x}<br>"
-            "Purchase rate: <b>%{y:.2f}%</b><br>"
-            "Sessions: %{customdata[0]:,}<br>"
-            "Purchases: %{customdata[1]:,}<br>"
-            "Lift: <b>%{customdata[2]:.2f}x</b><extra></extra>"
-        ),
-    ))
+    fig = go.Figure(
+        go.Bar(
+            x=df["risk_decile"],
+            y=pct,
+            marker_color=C["blue"],
+            text=pct.apply(lambda v: f"{v:.1f}%"),
+            textposition="outside",
+            customdata=df[["session_count", "purchase_count", "lift"]].values,
+            hovertemplate=(
+                "Decile %{x}<br>"
+                "Purchase rate: <b>%{y:.2f}%</b><br>"
+                "Sessions: %{customdata[0]:,}<br>"
+                "Purchases: %{customdata[1]:,}<br>"
+                "Lift: <b>%{customdata[2]:.2f}x</b><extra></extra>"
+            ),
+        )
+    )
 
     fig.add_hline(
         y=overall_pct,
@@ -374,16 +413,15 @@ def decile_chart(df: pd.DataFrame) -> go.Figure:
 
 # ── Logistic coefficient chart ────────────────────────────────────────────────
 
+
 def coefficient_chart(df: pd.DataFrame) -> go.Figure:
     """
     Horizontal bar chart of top-20 LR coefficients by absolute magnitude.
     Colored by direction; sorted by coefficient value.
     """
     df_sorted = df.sort_values("coefficient")
-    colors = [
-        C["blue"] if c > 0 else C["red"]
-        for c in df_sorted["coefficient"]
-    ]
+    colors = [C["blue"] if c > 0 else C["red"] for c in df_sorted["coefficient"]]
+
     def _feature_label(raw: str) -> str:
         scope, value = raw.split("__", 1) if "__" in raw else ("", raw)
         if value.startswith("first_item_name_"):
@@ -419,20 +457,22 @@ def coefficient_chart(df: pd.DataFrame) -> go.Figure:
 
     labels = df_sorted["feature"].map(_feature_label)
 
-    fig = go.Figure(go.Bar(
-        x=df_sorted["coefficient"],
-        y=labels,
-        orientation="h",
-        marker_color=colors,
-        customdata=df_sorted[["feature", "absolute_coefficient", "direction"]].values,
-        hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Coefficient: %{x:.4f}<br>"
-            "|Coefficient|: %{customdata[1]:.4f}<br>"
-            "Raw feature: %{customdata[0]}<br>"
-            "%{customdata[2]}<extra></extra>"
-        ),
-    ))
+    fig = go.Figure(
+        go.Bar(
+            x=df_sorted["coefficient"],
+            y=labels,
+            orientation="h",
+            marker_color=colors,
+            customdata=df_sorted[["feature", "absolute_coefficient", "direction"]].values,
+            hovertemplate=(
+                "<b>%{y}</b><br>"
+                "Coefficient: %{x:.4f}<br>"
+                "|Coefficient|: %{customdata[1]:.4f}<br>"
+                "Raw feature: %{customdata[0]}<br>"
+                "%{customdata[2]}<extra></extra>"
+            ),
+        )
+    )
 
     fig.add_vline(x=0, line_color=C["gray"], line_width=1)
 

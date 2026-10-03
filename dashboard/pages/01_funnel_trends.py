@@ -38,11 +38,10 @@ col_a, col_b, _ = st.columns([1, 1, 2])
 with col_a:
     start_sel = st.date_input("From week", value=min_date, min_value=min_date, max_value=max_date)
 with col_b:
-    end_sel   = st.date_input("To week",   value=max_date, min_value=min_date, max_value=max_date)
+    end_sel = st.date_input("To week", value=max_date, min_value=min_date, max_value=max_date)
 
 filtered = full_weeks[
-    (full_weeks["week_start"].dt.date >= start_sel) &
-    (full_weeks["week_start"].dt.date <= end_sel)
+    (full_weeks["week_start"].dt.date >= start_sel) & (full_weeks["week_start"].dt.date <= end_sel)
 ].copy()
 
 if filtered.empty:
@@ -77,17 +76,17 @@ st.plotly_chart(
 )
 
 # Stage-to-stage metrics for the filtered period
-total_views     = int(filtered["product_view_sessions"].sum())
+total_views = int(filtered["product_view_sessions"].sum())
 total_checkouts = int(filtered["checkout_sessions"].sum())
 total_purchases = int(filtered["purchase_sessions"].sum())
 
 st.caption("Filtered weekly totals for the selected date range.")
 mc1, mc2, mc3, mc4, mc5 = st.columns(5)
-mc1.metric("Product-view sessions",  f"{total_views:,}")
-mc2.metric("Checkout sessions",      f"{total_checkouts:,}")
-mc3.metric("Purchase sessions",      f"{total_purchases:,}")
-mc4.metric("View → Checkout",        f"{total_checkouts/total_views*100:.2f}%")
-mc5.metric("Overall conversion",     f"{total_purchases/total_views*100:.2f}%")
+mc1.metric("Product-view sessions", f"{total_views:,}")
+mc2.metric("Checkout sessions", f"{total_checkouts:,}")
+mc3.metric("Purchase sessions", f"{total_purchases:,}")
+mc4.metric("View → Checkout", f"{total_checkouts/total_views*100:.2f}%")
+mc5.metric("Overall conversion", f"{total_purchases/total_views*100:.2f}%")
 
 with st.expander("ℹ️ Tracking limitation: Add to cart gap"):
     st.markdown(
@@ -119,7 +118,7 @@ st.caption("Product view → Begin checkout → Purchase · Nov 2020 – Jan 202
 col_funnel, col_note = st.columns([1, 1])
 
 with col_funnel:
-    all_views     = int(device_df["product_view_sessions"].sum())
+    all_views = int(device_df["product_view_sessions"].sum())
     all_checkouts = int(device_df["checkout_sessions"].sum())
     all_purchases = int(device_df["purchase_sessions"].sum())
 
@@ -169,9 +168,13 @@ st.divider()
 st.subheader("Download Filtered Weekly Data")
 
 display_cols = [
-    "week_start", "product_view_sessions", "checkout_sessions",
-    "purchase_sessions", "view_to_checkout_rate",
-    "checkout_to_purchase_rate", "purchase_conversion_rate",
+    "week_start",
+    "product_view_sessions",
+    "checkout_sessions",
+    "purchase_sessions",
+    "view_to_checkout_rate",
+    "checkout_to_purchase_rate",
+    "purchase_conversion_rate",
 ]
 download_df = filtered[display_cols].copy()
 download_df["week_start"] = download_df["week_start"].dt.strftime("%Y-%m-%d")
@@ -184,15 +187,17 @@ st.download_button(
 )
 
 st.dataframe(
-    download_df.rename(columns={
-        "week_start": "Week",
-        "product_view_sessions": "Product views",
-        "checkout_sessions": "Checkouts",
-        "purchase_sessions": "Purchases",
-        "view_to_checkout_rate": "View→Checkout %",
-        "checkout_to_purchase_rate": "Checkout→Purchase %",
-        "purchase_conversion_rate": "Overall rate %",
-    }),
+    download_df.rename(
+        columns={
+            "week_start": "Week",
+            "product_view_sessions": "Product views",
+            "checkout_sessions": "Checkouts",
+            "purchase_sessions": "Purchases",
+            "view_to_checkout_rate": "View→Checkout %",
+            "checkout_to_purchase_rate": "Checkout→Purchase %",
+            "purchase_conversion_rate": "Overall rate %",
+        }
+    ),
     width="stretch",
     hide_index=True,
 )

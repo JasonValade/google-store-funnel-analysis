@@ -57,12 +57,12 @@ st.info(
 )
 
 # ── Load all artifacts ────────────────────────────────────────────────────────
-metrics   = load_model_metrics()
-val_comp  = load_validation_comparison()
+metrics = load_model_metrics()
+val_comp = load_validation_comparison()
 pr_curves = load_pr_curves()
 cal_curves = load_calibration_curves()
-deciles   = load_test_deciles()
-coefs     = load_logistic_coefficients()
+deciles = load_test_deciles()
+coefs = load_logistic_coefficients()
 
 # ── Consistency check: derive lift and capture from decile table ─────────────
 # This ensures metric cards agree with the authoritative decile artifact
@@ -108,7 +108,7 @@ k4.metric(
     "Brier score (calibrated)",
     f"{metrics['test_brier_calibrated']:.4f}",
     help=f"Improved from {metrics['test_brier_uncalibrated']:.4f} (uncalibrated) "
-         "after sigmoid calibration.",
+    "after sigmoid calibration.",
     delta=f"{metrics['test_brier_calibrated']-metrics['test_brier_uncalibrated']:.4f} vs uncalibrated",
     delta_color="inverse",
 )
@@ -121,7 +121,7 @@ k6.metric(
     "Top-decile capture",
     f"{capture_pct_display}%",
     help=f"Highest-score decile contained {int(decile_1['purchase_count'])} of {int(metrics['test_purchases'])} test purchases: "
-         f"{int(decile_1['purchase_count'])} / {int(metrics['test_purchases'])} = {metrics['test_top_decile_capture']*100:.2f}%, displayed as {capture_pct_display}%.",
+    f"{int(decile_1['purchase_count'])} / {int(metrics['test_purchases'])} = {metrics['test_top_decile_capture']*100:.2f}%, displayed as {capture_pct_display}%.",
 )
 
 st.divider()
@@ -132,7 +132,12 @@ st.subheader("Model Evaluation Charts")
 # Use selectbox for better accessibility across all viewport sizes
 chart_option = st.selectbox(
     "Select chart",
-    ["Precision-Recall Curves", "Calibration Curves", "Risk-Decile Lift", "Feature Associations (LR)"],
+    [
+        "Precision-Recall Curves",
+        "Calibration Curves",
+        "Risk-Decile Lift",
+        "Feature Associations (LR)",
+    ],
     label_visibility="collapsed",
     key="chart_selector",
 )
@@ -144,7 +149,9 @@ if chart_option == "Precision-Recall Curves":
         "before and after calibration."
     )
     st.plotly_chart(
-        pr_curves_chart(pr_curves, no_skill=metrics["validation_purchases"] / metrics["validation_rows"]),
+        pr_curves_chart(
+            pr_curves, no_skill=metrics["validation_purchases"] / metrics["validation_rows"]
+        ),
         width="stretch",
         theme="streamlit",
     )
@@ -173,9 +180,12 @@ elif chart_option == "Calibration Curves":
     st.plotly_chart(calibration_chart(cal_curves), width="stretch", theme="streamlit")
     col_c1, col_c2 = st.columns(2)
     col_c1.metric("Brier score (uncalibrated)", f"{metrics['test_brier_uncalibrated']:.4f}")
-    col_c2.metric("Brier score (calibrated)", f"{metrics['test_brier_calibrated']:.4f}",
-                  delta=f"{metrics['test_brier_calibrated']-metrics['test_brier_uncalibrated']:.4f}",
-                  delta_color="inverse")
+    col_c2.metric(
+        "Brier score (calibrated)",
+        f"{metrics['test_brier_calibrated']:.4f}",
+        delta=f"{metrics['test_brier_calibrated']-metrics['test_brier_uncalibrated']:.4f}",
+        delta_color="inverse",
+    )
     with st.expander("ℹ️ Calibration method"):
         st.markdown(
             """
@@ -187,7 +197,9 @@ elif chart_option == "Calibration Curves":
             calibration fitting cannot re-use test-set information. The threshold
             of **{:.4f}** was selected by maximising F1 on calibrated validation
             probabilities and was not re-tuned on the test set.
-            """.format(metrics["calibrated_threshold"])
+            """.format(
+                metrics["calibrated_threshold"]
+            )
         )
 
 elif chart_option == "Risk-Decile Lift":
@@ -201,14 +213,15 @@ elif chart_option == "Risk-Decile Lift":
         deciles.assign(
             purchase_rate_pct=(deciles["purchase_rate"] * 100).round(2),
             lift=deciles["lift"].round(3),
-        )[["risk_decile", "session_count", "purchase_count",
-           "purchase_rate_pct", "lift"]].rename(columns={
-            "risk_decile":       "Decile (1=highest risk)",
-            "session_count":     "Sessions",
-            "purchase_count":    "Purchases",
-            "purchase_rate_pct": "Purchase rate %",
-            "lift":              "Lift",
-        }),
+        )[["risk_decile", "session_count", "purchase_count", "purchase_rate_pct", "lift"]].rename(
+            columns={
+                "risk_decile": "Decile (1=highest risk)",
+                "session_count": "Sessions",
+                "purchase_count": "Purchases",
+                "purchase_rate_pct": "Purchase rate %",
+                "lift": "Lift",
+            }
+        ),
         width="stretch",
         hide_index=True,
     )
@@ -240,23 +253,25 @@ st.caption(
 vc_display = val_comp.copy()
 for col in ["pr_auc", "roc_auc", "brier_score", "precision", "recall", "f1"]:
     vc_display[col] = vc_display[col].round(4)
-vc_display["top_decile_lift"]    = vc_display["top_decile_lift"].round(3)
+vc_display["top_decile_lift"] = vc_display["top_decile_lift"].round(3)
 vc_display["top_decile_capture"] = (vc_display["top_decile_capture"] * 100).round(1)
-vc_display["threshold"]          = vc_display["threshold"].round(4)
+vc_display["threshold"] = vc_display["threshold"].round(4)
 
 st.dataframe(
-    vc_display.rename(columns={
-        "model":              "Model",
-        "pr_auc":             "PR-AUC",
-        "roc_auc":            "ROC-AUC",
-        "brier_score":        "Brier",
-        "precision":          "Precision",
-        "recall":             "Recall",
-        "f1":                 "F1",
-        "top_decile_lift":    "Lift@Decile1",
-        "top_decile_capture": "Capture@D1 %",
-        "threshold":          "Threshold",
-    }),
+    vc_display.rename(
+        columns={
+            "model": "Model",
+            "pr_auc": "PR-AUC",
+            "roc_auc": "ROC-AUC",
+            "brier_score": "Brier",
+            "precision": "Precision",
+            "recall": "Recall",
+            "f1": "F1",
+            "top_decile_lift": "Lift@Decile1",
+            "top_decile_capture": "Capture@D1 %",
+            "threshold": "Threshold",
+        }
+    ),
     width="stretch",
     hide_index=True,
 )
@@ -277,20 +292,20 @@ st.caption(
 )
 
 split_data = {
-    "Split":      ["Train", "Validation", "Test"],
-    "Start":      [metrics["train_start"],      metrics["validation_start"],      metrics["test_start"]],
-    "End":        [metrics["train_end"],         metrics["validation_end"],         metrics["test_end"]],
-    "Sessions":   [
+    "Split": ["Train", "Validation", "Test"],
+    "Start": [metrics["train_start"], metrics["validation_start"], metrics["test_start"]],
+    "End": [metrics["train_end"], metrics["validation_end"], metrics["test_end"]],
+    "Sessions": [
         f"{metrics['train_rows']:,}",
         f"{metrics['validation_rows']:,}",
         f"{metrics['test_rows']:,}",
     ],
-    "Purchases":  [
+    "Purchases": [
         f"{metrics['train_purchases']:,}",
         f"{metrics['validation_purchases']:,}",
         f"{metrics['test_purchases']:,}",
     ],
-    "Rate %":     [
+    "Rate %": [
         round(metrics["train_purchase_rate"] * 100, 2),
         round(metrics["validation_purchase_rate"] * 100, 2),
         round(metrics["test_purchase_rate"] * 100, 2),
@@ -318,20 +333,16 @@ fn = metrics["confusion_matrix_fn"]
 tp = metrics["confusion_matrix_tp"]
 
 cm_df = pd.DataFrame(
-    [[f"TN = {tn:,}", f"FP = {fp:,}"],
-     [f"FN = {fn:,}", f"TP = {tp:,}"]],
+    [[f"TN = {tn:,}", f"FP = {fp:,}"], [f"FN = {fn:,}", f"TP = {tp:,}"]],
     index=["Actual: No purchase", "Actual: Purchase"],
     columns=["Predicted: No purchase", "Predicted: Purchase"],
 )
 st.dataframe(cm_df, width="stretch")
 
 cm1, cm2, cm3 = st.columns(3)
-cm1.metric("Precision", f"{metrics['test_precision']:.4f}",
-           help="TP / (TP + FP)")
-cm2.metric("Recall",    f"{metrics['test_recall']:.4f}",
-           help="TP / (TP + FN)")
-cm3.metric("F1",        f"{metrics['test_f1']:.4f}",
-           help="Harmonic mean of precision and recall.")
+cm1.metric("Precision", f"{metrics['test_precision']:.4f}", help="TP / (TP + FP)")
+cm2.metric("Recall", f"{metrics['test_recall']:.4f}", help="TP / (TP + FN)")
+cm3.metric("F1", f"{metrics['test_f1']:.4f}", help="Harmonic mean of precision and recall.")
 
 st.divider()
 

@@ -201,6 +201,7 @@ def inject_global_styles() -> None:
 
 # ── Small CSV loaders ────────────────────────────────────────────────────────
 
+
 @st.cache_data
 def load_device_funnel() -> pd.DataFrame:
     """3-row device breakdown. Rate columns stored as percentages (e.g. 6.26)."""
@@ -224,6 +225,7 @@ def load_tracking_alerts() -> pd.DataFrame:
 # ── Model artifact loaders ────────────────────────────────────────────────────
 # Note: Caching disabled for model artifacts to ensure file changes are reflected immediately.
 # These files are small (KB scale) and load quickly, so caching provides minimal benefit.
+
 
 def load_model_metrics() -> dict:
     """36-key JSON. Rates stored as proportions (0–1), e.g. test_pr_auc=0.140."""
@@ -258,6 +260,7 @@ def load_logistic_coefficients() -> pd.DataFrame:
 
 # ── Large feature file ────────────────────────────────────────────────────────
 
+
 @st.cache_data
 def load_model_features() -> pd.DataFrame:
     """
@@ -274,6 +277,7 @@ def load_model_features() -> pd.DataFrame:
 
 
 # ── Sidebar helper ────────────────────────────────────────────────────────────
+
 
 def render_page_header(title: str, subtitle: str, icon: str = "📊") -> None:
     """Render a consistent, lightweight page header (native-first, minimal CSS)."""
@@ -299,10 +303,7 @@ def render_sidebar() -> None:
         m1, m2 = st.columns(2)
         m1.metric("Sessions", "77.0K", help="Product-view sessions in the model dataset.")
         m2.metric("Events", "4.30M", help="Total GA4 events, Nov 2020 – Jan 2021.")
-        st.caption(
-            "**Period:** Nov 2020 – Jan 2021  \n"
-            "**Source:** BigQuery public dataset"
-        )
+        st.caption("**Period:** Nov 2020 – Jan 2021  \n" "**Source:** BigQuery public dataset")
         st.divider()
         st.caption(
             "Offline portfolio prototype: pre-computed local artifacts only "

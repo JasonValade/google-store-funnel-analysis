@@ -24,7 +24,8 @@ def main() -> None:
         st.session_state.expanded_section = None
 
     # Visual Timeline
-    st.markdown("""
+    st.markdown(
+        """
     <div style="background: linear-gradient(90deg, rgba(79,140,255,0.1) 0%, rgba(37,99,235,0.05) 100%);
                 border: 1px solid rgba(79, 140, 255, 0.2);
                 border-radius: 12px;
@@ -51,13 +52,16 @@ def main() -> None:
             <span style="background: rgba(79,140,255,0.2); padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600;">💡 Insights</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # Section 1: Understanding the Problem
     st.markdown("## 🎯 Phase 1: Understanding the Problem")
 
     with st.expander("Business Question & Objectives", expanded=True):
-        st.markdown("""
+        st.markdown(
+            """
         ### The Core Question
         **Where do customers abandon the purchase journey, which segments and products underperform,
         and can early-session behavior identify visitors who are more likely to purchase?**
@@ -73,13 +77,15 @@ def main() -> None:
         - Marketing spend optimization - target high-intent visitors
         - Product assortment decisions - identify underperforming items
         - Tracking quality assurance - ensure data reliability
-        """)
+        """
+        )
 
     # Section 2: Data Exploration
     st.markdown("## 🔍 Phase 2: Data Exploration & Quality Assessment")
 
     with st.expander("Data Source & Schema"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Source
         **Dataset:** `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
         - **Scope:** November 2020 - January 2021 (holiday period)
@@ -102,10 +108,12 @@ def main() -> None:
         - `event_timestamp` - Microsecond precision
         - `user_pseudo_id` - Anonymous user ID
         - `ga_session_id` - Session identifier
-        """)
+        """
+        )
 
     with st.expander("Data Quality Issues Discovered"):
-        st.markdown("""
+        st.markdown(
+            """
         ### 🚨 Critical Finding: Tracking Outages
 
         During initial exploration, discovered major tracking issues:
@@ -125,9 +133,11 @@ def main() -> None:
         - Including unreliable data would distort funnel metrics
         - Normalization enabled product-level analysis
         - Transparency builds trust in results
-        """)
+        """
+        )
 
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background: rgba(255, 87, 87, 0.1); border: 1px solid rgba(255, 87, 87, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span style="font-size: 1.2rem;">⚠️</span>
@@ -137,13 +147,16 @@ def main() -> None:
                 Data quality is foundational. Garbage in = garbage out. Always validate data quality before analysis.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     # Section 3: Funnel Construction
     st.markdown("## 📊 Phase 3: Funnel Definition & Construction")
 
     with st.expander("Initial Approach vs. Refined Approach"):
-        st.markdown("""
+        st.markdown(
+            """
         ### ❌ Initial Approach: Simple Event Counting
         Count each event type and calculate conversion rates.
 
@@ -178,9 +191,11 @@ def main() -> None:
         | **Overall** | — | **6.05%** |
 
         **Key Insight:** 86% of product-view sessions never begin checkout.
-        """)
+        """
+        )
 
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background: rgba(79, 140, 255, 0.1); border: 1px solid rgba(79, 140, 255, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span style="font-size: 1.2rem;">🎯</span>
@@ -190,10 +205,13 @@ def main() -> None:
                 86% checkout abandonment represents the largest optimization opportunity. If we capture just 10% more checkouts: ~1,000 additional purchases/month = $50K-$100K additional revenue.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     with st.expander("Alternative Funnel for ML Modeling"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Broader Definition for Machine Learning
 
         For the propensity model, we used a **broader funnel definition**:
@@ -208,13 +226,15 @@ def main() -> None:
         - Better represents real-world purchase behavior
 
         **Model prevalence:** 6.09% (vs. 6.05% in ordered funnel)
-        """)
+        """
+        )
 
     # Section 4: Segmentation Analysis
     st.markdown("## 🎯 Phase 4: Segmentation Analysis")
 
     with st.expander("Device Segmentation"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Finding: Mobile Slightly Outperforms Desktop
 
         | Device | Conversion Rate | Statistically Significant? |
@@ -231,10 +251,12 @@ def main() -> None:
         ### Why Statistical Context Matters
         Without statistical testing, we might overinvest in mobile improvements
         when the difference could be random variation.
-        """)
+        """
+        )
 
     with st.expander("Traffic Source Analysis"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Finding: Direct Traffic Converts Best
 
         | Channel | Conversion Rate |
@@ -252,10 +274,12 @@ def main() -> None:
         - Audit self-referral rates (may inflate direct traffic)
         - Validate attribution accuracy before reallocating ad spend
         - Consider session-level attribution for future analysis
-        """)
+        """
+        )
 
     with st.expander("Product-Level Analysis"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Finding: High-Traffic, Low-Conversion Products
 
         Several products had 1-2% conversion rates vs. 6% average.
@@ -279,13 +303,15 @@ def main() -> None:
         - Remove products that are actually popular but have tracking issues
         - Miss inventory problems that are easily fixable
         - Waste time on UX changes when the real issue is inventory
-        """)
+        """
+        )
 
     # Section 5: Tracking Health Monitoring
     st.markdown("## 🔔 Phase 5: Tracking Health Monitoring")
 
     with st.expander("The Problem: Detecting Tracking Failures"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Challenge
         During exploration, discovered `add_to_cart` events dropped to zero
         on specific dates despite continued page views.
@@ -306,10 +332,12 @@ def main() -> None:
         - Event-volume ratio < 0.5 → Potential tracking failure
         - Page-view ratio < 0.5 → Event-specific issue (not general traffic decline)
         - Z-score > 3 → Statistically significant deviation
-        """)
+        """
+        )
 
     with st.expander("Validation & Results"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Manual Validation
         Manually confirmed four outage dates (Nov 21-24) by checking event counts.
 
@@ -332,13 +360,15 @@ def main() -> None:
         - Quick detection of tracking failures
         - Prevention of business decisions based on bad data
         - Improved data quality culture
-        """)
+        """
+        )
 
     # Section 6: Feature Engineering
     st.markdown("## ⚙️ Phase 6: Feature Engineering for Prediction")
 
     with st.expander("Problem Statement & Constraints"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Question
         Can early-session behavior predict whether a purchase will occur later?
 
@@ -354,10 +384,12 @@ def main() -> None:
         ```sql
         WHERE event_timestamp <= first_view_timestamp
         ```
-        """)
+        """
+        )
 
     with st.expander("Feature Categories"):
-        st.markdown("""
+        st.markdown(
+            """
         ### 1. Temporal Features
         - `seconds_to_first_view` - Time from session start to first product view
         - `hour_sin`, `hour_cos` - Cyclical encoding of hour of day
@@ -397,10 +429,12 @@ def main() -> None:
         - `item_metadata_missing` - Flag for missing item information
 
         **Rationale:** Long browsing before viewing may indicate research vs. purchase intent.
-        """)
+        """
+        )
 
     with st.expander("Feature Validation"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Validation Checks Performed
 
         1. **Timestamp ordering** - Ensure feature times ≤ purchase times
@@ -418,9 +452,11 @@ def main() -> None:
         - **Final features:** ~100 after encoding
         - **Sessions:** 77,020
         - **Features per session:** 100+
-        """)
+        """
+        )
 
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background: rgba(0, 153, 136, 0.1); border: 1px solid rgba(0, 153, 136, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span style="font-size: 1.2rem;">🔒</span>
@@ -430,13 +466,16 @@ def main() -> None:
                 Strict temporal separation: Features only use data BEFORE first view_item. Target only considers purchases AFTER first view_item. This prevents the model from "cheating" with future information.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     # Section 7: Model Development
     st.markdown("## 🤖 Phase 7: Model Development & Evaluation")
 
     with st.expander("Problem Framing & Metrics"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Task
         Binary classification: predict whether a purchase occurs in a session
 
@@ -456,10 +495,12 @@ def main() -> None:
         - ROC-AUC: 0.7876
         - Brier score: 0.0457 (calibration)
         - Lift at top decile: 3.12×
-        """)
+        """
+        )
 
     with st.expander("Train/Validation/Test Split"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Chronological Split to Prevent Leakage
 
         | Set | Date Range | Sessions | Purchase Rate |
@@ -473,10 +514,12 @@ def main() -> None:
 
         **Drift Notice:** Test set prevalence (5.04%) lower than train (6.09%)
         due to post-holiday decline. This is realistic and expected.
-        """)
+        """
+        )
 
     with st.expander("Model Comparison"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Models Evaluated
 
         | Model | PR-AUC | ROC-AUC | Interpretability |
@@ -491,9 +534,11 @@ def main() -> None:
         - Handles non-linear relationships
 
         **Key Finding:** Model provides **2.78× improvement** over no-skill baseline.
-        """)
+        """
+        )
 
-        st.markdown("""
+        st.markdown(
+            """
         <div style="background: rgba(0, 153, 136, 0.1); border: 1px solid rgba(0, 153, 136, 0.3); border-radius: 8px; padding: 1rem; margin-top: 1rem;">
             <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
                 <span style="font-size: 1.2rem;">📈</span>
@@ -503,10 +548,13 @@ def main() -> None:
                 Random Forest PR-AUC: 0.1402 vs. Baseline: 0.0504 = 2.78× improvement. The model successfully identifies high-intent visitors with 3.12× lift in the top decile.
             </div>
         </div>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
 
     with st.expander("Feature Importance & Interpretation"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Top Predictive Features
 
         **From Logistic Regression (coefficients):**
@@ -523,10 +571,12 @@ def main() -> None:
 - Product category is the strongest signal (some items sell better)
 - Mobile users have slightly higher propensity
 - Users who engage before viewing products are more likely to purchase
-        """)
+        """
+        )
 
     with st.expander("Calibration & Decile Analysis"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Calibration: Are Probabilities Well-Calibrated?
 
         **Approach:** Sigmoid calibration (Platt scaling) on validation set
@@ -555,13 +605,15 @@ def main() -> None:
 - Top 10% of sessions capture 31.3% of purchases
 - Target high-decile sessions for interventions (promotions, support)
 - 3.12× lift means 3x more likely to purchase than average
-        """)
+        """
+        )
 
     # Section 8: Recommendations
     st.markdown("## 💡 Phase 8: Recommendations & Next Steps")
 
     with st.expander("Business Recommendations"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Immediate Actions (0-30 days)
 
         1. **Reduce checkout friction**
@@ -604,10 +656,12 @@ def main() -> None:
         8. **Real-time analytics**
            - Live dashboard deployment
            - Integration with production systems
-        """)
+        """
+        )
 
     with st.expander("Limitations & Caveats"):
-        st.markdown("""
+        st.markdown(
+            """
         ### Data Limitations
         - Public dataset is obfuscated (no real user data)
         - Covers only Nov 2020 - Jan 2021 (holiday period)
@@ -624,13 +678,15 @@ def main() -> None:
         - Dashboard uses pre-computed artifacts (not live data)
         - Model requires monitoring for calibration drift
         - Tracking monitoring is a prototype (needs productionization)
-        """)
+        """
+        )
 
     # Section 9: Key Learnings
     st.markdown("## 📚 Key Learnings & Retrospective")
 
     # Visual Summary Card
-    st.markdown("""
+    st.markdown(
+        """
     <div style="background: linear-gradient(135deg, rgba(79,140,255,0.15) 0%, rgba(37,99,235,0.1) 100%);
                 border: 1px solid rgba(79, 140, 255, 0.3);
                 border-radius: 16px;
@@ -657,41 +713,50 @@ def main() -> None:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     with st.expander("What Worked Well"):
-        st.markdown("""
+        st.markdown(
+            """
         ✅ **Strict temporal separation** in feature engineering prevented leakage
         ✅ **Manual tracking validation** confirmed monitoring signals were accurate
         ✅ **Multi-page dashboard** allowed both business and technical audiences
         ✅ **Pre-computed artifacts** made deployment simple and secure
         ✅ **Statistical context** prevented overinterpretation of small differences
         ✅ **Documentation** of limitations built trust in results
-        """)
+        """
+        )
 
     with st.expander("Challenges Faced"):
-        st.markdown("""
+        st.markdown(
+            """
         ⚠️ **GA4 data complexity** - Nested fields required significant SQL engineering
         ⚠️ **Tracking reliability** - Had to exclude early November from funnel analysis
         ⚠️ **Item ID inconsistency** - Required product name normalization
         ⚠️ **Class imbalance** - Required careful metric selection (PR-AUC vs ROC-AUC)
         ⚠️ **Acquisition attribution** - First-touch fields limited channel analysis
         ⚠️ **Temporal drift** - Post-holiday decline affected test set prevalence
-        """)
+        """
+        )
 
     with st.expander("What I'd Do Differently"):
-        st.markdown("""
+        st.markdown(
+            """
         🔄 **Earlier A/B test planning** - Would design experiments alongside analysis
         🔄 **Real-time monitoring** - Would implement automated alerts sooner
         🔄 **Feature documentation** - Would create data dictionary earlier
         🔄 **Model monitoring plan** - Would define drift detection criteria upfront
         🔄 **Stakeholder alignment** - Would align on metrics before building dashboard
         🔄 **Session-level attribution** - Would implement better tracking for future analysis
-        """)
+        """
+        )
 
     # Footer
     st.markdown("---")
-    st.markdown("""
+    st.markdown(
+        """
     ### 📖 Full Documentation
 
     For more detailed technical documentation, see:
@@ -704,18 +769,23 @@ def main() -> None:
     - [Model Methodology](../reports/model_methodology.md) - ML-specific details
     - [Metric Definitions](../docs/metric_definitions.md) - Business metric definitions
     - [Data Dictionary](../docs/data_dictionary.md) - Field descriptions
-    """)
+    """
+    )
 
-    st.markdown("""
+    st.markdown(
+        """
     <div style="text-align: center; opacity: 0.7; margin-top: 2rem;">
         This analysis demonstrates the complete data science workflow: from raw event data
         to actionable business insights, with technical rigor in feature engineering,
         model development, and evaluation.
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
     # Process Flow Visualization
-    st.markdown("""
+    st.markdown(
+        """
     <div style="background: rgba(79, 140, 255, 0.05); border: 1px solid rgba(79, 140, 255, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 2rem;">
         <div style="text-align: center; font-size: 0.85rem; opacity: 0.7; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700;">
             The Data Science Workflow
@@ -734,7 +804,9 @@ def main() -> None:
             <div style="background: rgba(0, 153, 136, 0.2); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: rgba(0, 153, 136, 0.9);">Action</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """,
+        unsafe_allow_html=True,
+    )
 
 
 if __name__ == "__main__":
