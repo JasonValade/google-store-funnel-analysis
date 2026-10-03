@@ -23,8 +23,12 @@ _DEMO = _REPO / "data" / "processed" / "demo"
 def _demo_path(filename: str) -> Path:
     p = _DEMO / filename
     if not p.exists():
+        try:
+            display_path = p.relative_to(_REPO)
+        except ValueError:
+            display_path = p
         st.error(
-            f"Missing artifact: `{p.relative_to(_REPO)}`  \n"
+            f"Missing artifact: `{display_path}`  \n"
             "Re-run `notebooks/03_purchase_prediction.ipynb` to regenerate "
             "dashboard artifacts."
         )

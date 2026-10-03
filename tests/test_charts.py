@@ -22,6 +22,7 @@ class TestBaseLayout:
     def test_base_layout_returns_dict(self):
         """Test that _base_layout returns a dictionary."""
         from dashboard.utils.charts import _base_layout
+
         result = _base_layout()
         assert isinstance(result, dict)
         assert "font" in result
@@ -34,6 +35,7 @@ class TestApplyTheme:
     def test_apply_theme_returns_figure(self):
         """Test that apply_theme returns a Figure object."""
         from dashboard.utils.charts import apply_theme
+
         fig = Figure()
         result = apply_theme(fig, "Test Title")
         assert isinstance(result, Figure)
@@ -66,13 +68,22 @@ class TestWeeklyConversionChart:
     @pytest.fixture
     def weekly_data(self):
         """Create mock weekly conversion data."""
-        return pd.DataFrame({
-            "week_start": pd.to_datetime([
-                "2020-11-01", "2020-11-08", "2020-11-15",
-                "2020-11-22", "2020-11-29", "2020-12-06", "2020-12-13",
-            ]),
-            "purchase_conversion_rate": [7.0, 7.5, 8.0, 8.5, 8.93, 8.5, 8.0],
-        })
+        return pd.DataFrame(
+            {
+                "week_start": pd.to_datetime(
+                    [
+                        "2020-11-01",
+                        "2020-11-08",
+                        "2020-11-15",
+                        "2020-11-22",
+                        "2020-11-29",
+                        "2020-12-06",
+                        "2020-12-13",
+                    ]
+                ),
+                "purchase_conversion_rate": [7.0, 7.5, 8.0, 8.5, 8.93, 8.5, 8.0],
+            }
+        )
 
     def test_weekly_conversion_chart_basic(self, weekly_data):
         """Test basic weekly conversion chart."""
@@ -95,10 +106,12 @@ class TestDeviceBarChart:
     @pytest.fixture
     def device_data(self):
         """Create mock device data."""
-        return pd.DataFrame({
-            "device_category": ["mobile", "desktop", "tablet"],
-            "overall_purchase_rate": [6.26, 5.91, 5.50],
-        })
+        return pd.DataFrame(
+            {
+                "device_category": ["mobile", "desktop", "tablet"],
+                "overall_purchase_rate": [6.26, 5.91, 5.50],
+            }
+        )
 
     def test_device_bar_chart_basic(self, device_data):
         """Test basic device bar chart."""
@@ -115,16 +128,18 @@ class TestTrackingScatter:
     @pytest.fixture
     def tracking_data(self):
         """Create mock tracking alert data."""
-        return pd.DataFrame({
-            "date": pd.to_datetime(["2020-11-21", "2020-11-22", "2020-11-23"]),
-            "event_volume_ratio": [0.0, 0.0, 0.0],
-            "page_view_ratio": [0.8, 0.9, 1.0],
-            "traffic_adjusted_event_ratio": [0.0, 0.0, 0.0],
-            "event_label": ["add_to_cart", "add_to_cart", "add_to_cart"],
-            "status_label": ["CRITICAL", "CRITICAL", "CRITICAL"],
-            "event_name": ["add_to_cart", "add_to_cart", "add_to_cart"],
-            "tracking_status": ["outage", "outage", "outage"],
-        })
+        return pd.DataFrame(
+            {
+                "date": pd.to_datetime(["2020-11-21", "2020-11-22", "2020-11-23"]),
+                "event_volume_ratio": [0.0, 0.0, 0.0],
+                "page_view_ratio": [0.8, 0.9, 1.0],
+                "traffic_adjusted_event_ratio": [0.0, 0.0, 0.0],
+                "event_label": ["add_to_cart", "add_to_cart", "add_to_cart"],
+                "status_label": ["CRITICAL", "CRITICAL", "CRITICAL"],
+                "event_name": ["add_to_cart", "add_to_cart", "add_to_cart"],
+                "tracking_status": ["outage", "outage", "outage"],
+            }
+        )
 
     def test_tracking_scatter_basic(self, tracking_data):
         """Test basic tracking scatter chart."""
@@ -145,11 +160,13 @@ class TestPRCurvesChart:
         data = []
         for model in ["LogisticRegression", "RandomForest"]:
             for recall in [i / 10 for i in range(11)]:
-                data.append({
-                    "model": model,
-                    "recall": recall,
-                    "precision": recall * 0.8 + 0.1,
-                })
+                data.append(
+                    {
+                        "model": model,
+                        "recall": recall,
+                        "precision": recall * 0.8 + 0.1,
+                    }
+                )
         return pd.DataFrame(data)
 
     def test_pr_curves_chart_basic(self, pr_data):
@@ -172,11 +189,13 @@ class TestCalibrationChart:
         for cal_type in ["uncalibrated", "sigmoid_calibrated"]:
             for i in range(10):
                 pred = (i + 1) / 10
-                data.append({
-                    "calibration_type": cal_type,
-                    "mean_predicted_probability": pred,
-                    "observed_positive_fraction": pred * 0.95 + 0.02,
-                })
+                data.append(
+                    {
+                        "calibration_type": cal_type,
+                        "mean_predicted_probability": pred,
+                        "observed_positive_fraction": pred * 0.95 + 0.02,
+                    }
+                )
         return pd.DataFrame(data)
 
     def test_calibration_chart_basic(self, calibration_data):
@@ -197,14 +216,16 @@ class TestDecileChart:
         """Create mock decile data."""
         data = []
         for i in range(1, 11):
-            data.append({
-                "risk_decile": i,
-                "purchase_rate": 0.05 + (11 - i) * 0.01,
-                "session_count": 1000,
-                "purchase_count": int(1000 * (0.05 + (11 - i) * 0.01)),
-                "lift": 1.0 + (11 - i) * 0.2,
-                "overall_test_purchase_rate": 0.05,
-            })
+            data.append(
+                {
+                    "risk_decile": i,
+                    "purchase_rate": 0.05 + (11 - i) * 0.01,
+                    "session_count": 1000,
+                    "purchase_count": int(1000 * (0.05 + (11 - i) * 0.01)),
+                    "lift": 1.0 + (11 - i) * 0.2,
+                    "overall_test_purchase_rate": 0.05,
+                }
+            )
         return pd.DataFrame(data)
 
     def test_decile_chart_basic(self, decile_data):
@@ -222,24 +243,29 @@ class TestCoefficientChart:
     @pytest.fixture
     def coefficient_data(self):
         """Create mock coefficient data."""
-        return pd.DataFrame({
-            "feature": [
-                "first_item_name_Android_Wear_Wristband",
-                "country_United_States",
-                "device_category_mobile",
-                "seconds_log1p",
-            ],
-            "coefficient": [0.5, 0.3, -0.2, -0.1],
-            "absolute_coefficient": [0.5, 0.3, 0.2, 0.1],
-            "direction": ["positive", "positive", "negative", "negative"],
-        })
+        return pd.DataFrame(
+            {
+                "feature": [
+                    "first_item_name_Android_Wear_Wristband",
+                    "country_United_States",
+                    "device_category_mobile",
+                    "seconds_log1p",
+                ],
+                "coefficient": [0.5, 0.3, -0.2, -0.1],
+                "absolute_coefficient": [0.5, 0.3, 0.2, 0.1],
+                "direction": ["positive", "positive", "negative", "negative"],
+            }
+        )
 
     def test_coefficient_chart_basic(self, coefficient_data):
         """Test basic coefficient chart."""
         fig = coefficient_chart(coefficient_data)
         assert isinstance(fig, Figure)
         assert len(fig.data) == 1
-        assert fig.layout.xaxis.title.text == "Logistic regression coefficient"
+        assert (
+            fig.layout.xaxis.title.text
+            == "Logistic regression coefficient (association only — not causal)"
+        )
         assert fig.layout.yaxis.title.text == ""
 
     def test_coefficient_chart_coloring(self, coefficient_data):
