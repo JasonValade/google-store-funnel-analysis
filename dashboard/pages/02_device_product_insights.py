@@ -62,9 +62,9 @@ st.dataframe(
     use_container_width=True,
     hide_index=True,
     column_config={
-        "Views": st.column_config.NumberColumn(format="%,d"),
-        "Checkouts": st.column_config.NumberColumn(format="%,d"),
-        "Purchases": st.column_config.NumberColumn(format="%,d"),
+        "Views": st.column_config.NumberColumn(format="%d"),
+        "Checkouts": st.column_config.NumberColumn(format="%d"),
+        "Purchases": st.column_config.NumberColumn(format="%d"),
         "View→Checkout %": st.column_config.NumberColumn(format="%.2f"),
         "Checkout→Purchase %": st.column_config.NumberColumn(format="%.2f"),
         "Overall %": st.column_config.NumberColumn(format="%.2f"),
@@ -196,8 +196,8 @@ st.dataframe(
     use_container_width=True,
     hide_index=True,
     column_config={
-        "Product-view sessions": st.column_config.NumberColumn(format="%,d"),
-        "Sessions purchasing later": st.column_config.NumberColumn(format="%,d"),
+        "Product-view sessions": st.column_config.NumberColumn(format="%d"),
+        "Sessions purchasing later": st.column_config.NumberColumn(format="%d"),
         "Session purchase rate %": st.column_config.NumberColumn(format="%.2f"),
     },
 )

@@ -108,7 +108,8 @@ st.caption(
 st.plotly_chart(tracking_scatter(filtered), use_container_width=True, theme="streamlit")
 
 with st.expander("ℹ️ How the ratios are computed"):
-    st.markdown("""
+    st.markdown(
+        """
         **Rolling 7-day baseline** (excluding the alert date itself):
         - `expected_event_count` = rolling mean of the same event over the previous 7 days
         - `event_volume_ratio` = `event_count / expected_event_count`
@@ -128,7 +129,8 @@ with st.expander("ℹ️ How the ratios are computed"):
         - `LIKELY_TRAFFIC_DECLINE`: raw event ratio is low but traffic-adjusted ratio
           remains near 1.0, suggesting a site-wide traffic decline rather than an
           event-specific failure.
-        """)
+        """
+    )
 
 st.divider()
 
@@ -182,10 +184,10 @@ st.dataframe(
     use_container_width=True,
     hide_index=True,
     column_config={
-        "Observed": st.column_config.NumberColumn(format="%,d"),
-        "Expected": st.column_config.NumberColumn(format="%,d"),
-        "Page views": st.column_config.NumberColumn(format="%,d"),
-        "Expected PV": st.column_config.NumberColumn(format="%,d"),
+        "Observed": st.column_config.NumberColumn(format="%d"),
+        "Expected": st.column_config.NumberColumn(format="%d"),
+        "Page views": st.column_config.NumberColumn(format="%d"),
+        "Expected PV": st.column_config.NumberColumn(format="%d"),
         "Event ratio": st.column_config.NumberColumn(format="%.3f"),
         "PV ratio": st.column_config.NumberColumn(format="%.3f"),
         "Traffic-adjusted ratio": st.column_config.NumberColumn(format="%.3f"),
@@ -198,7 +200,8 @@ st.divider()
 # ── Interpretation ────────────────────────────────────────────────────────────
 st.subheader("Key Findings")
 
-st.markdown("""
+st.markdown(
+    """
     **Critical outages — Nov 21–24, 2020 (Add to cart, 4 days):**
     - Add to cart event count was **zero** on all four dates.
     - Page-view traffic was normal (page-view ratios 0.75–1.23), ruling out a
@@ -212,7 +215,8 @@ st.markdown("""
     - Add to cart (Jan 31): traffic-adjusted ratio = **0.903** — same pattern.
     - Neither is classified as a tracking failure; both are consistent with
       reduced overall site traffic.
-    """)
+    """
+)
 
 st.info(
     "**Prototype disclaimer:** This monitor was built for portfolio demonstration "

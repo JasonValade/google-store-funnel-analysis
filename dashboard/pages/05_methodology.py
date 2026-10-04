@@ -52,7 +52,8 @@ st.markdown(
 # ── Dataset ────────────────────────────────────────────────────────────────────
 st.header("1. Dataset")
 
-st.markdown("""
+st.markdown(
+    """
     **Source:** `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
 
     The Google Merchandise Store GA4 e-commerce export is a publicly available,
@@ -71,14 +72,16 @@ st.markdown("""
     All queries use `_TABLE_SUFFIX` filtering to minimise data scanned.
     SQL scripts are in the `sql/` directory of this repository.
     The repository does not contain Google Cloud credentials or raw BigQuery exports.
-    """)
+    """
+)
 
 st.divider()
 
 # ── Funnel methodology ─────────────────────────────────────────────────────────
 st.header("2. Funnel Methodology")
 
-st.markdown("""
+st.markdown(
+    """
     ### Primary ordered funnel
     Sessions are classified as reaching a funnel stage if they contain the
     corresponding GA4 event **in order**: `view_item` → `begin_checkout` → `purchase`.
@@ -107,14 +110,16 @@ st.markdown("""
     (mobile vs. desktop). The observed difference (0.35 pp) was borderline
     significant (p = 0.050) and small in practical effect size.
     Tablet sessions (1,700) were too few for a meaningful comparison.
-    """)
+    """
+)
 
 st.divider()
 
 # ── Tracking health monitor ────────────────────────────────────────────────────
 st.header("3. Tracking Health Monitor")
 
-st.markdown("""
+st.markdown(
+    """
     The tracking monitor computes a **rolling 7-day expected baseline** for each
     event type and flags dates where observed counts deviate significantly.
 
@@ -136,7 +141,8 @@ st.markdown("""
     **Prototype status:** This monitor was built and validated offline on historical
     data. It is not connected to a live GA4 stream and does not send operational alerts.
     All results are illustrative.
-    """)
+    """
+)
 
 st.divider()
 
@@ -146,7 +152,8 @@ st.header("4. Purchase Propensity Model")
 col_a, col_b = st.columns(2)
 
 with col_a:
-    st.markdown("""
+    st.markdown(
+        """
         ### Prediction task
         Given only information available immediately after a session's **first
         `view_item` event**, predict whether that session will contain a `purchase`
@@ -167,10 +174,12 @@ with col_a:
         Chronological splitting ensures that no future sessions leak into
         training or validation. The validation set is used for model selection
         and threshold calibration only; the test set is evaluated once.
-        """)
+        """
+    )
 
 with col_b:
-    st.markdown("""
+    st.markdown(
+        """
         ### Feature engineering
         Applied before sklearn preprocessing:
         - **item_metadata_missing:** binary flag for missing price/name/category
@@ -194,14 +203,16 @@ with col_b:
           fitted on validation data only; reduces Brier from 0.1778 → 0.0457
         - **Classification threshold 0.0892** selected on calibrated validation
           probabilities to maximise F1; not re-tuned on test data
-        """)
+        """
+    )
 
 st.divider()
 
 # ── Limitations ────────────────────────────────────────────────────────────────
 st.header("5. Limitations")
 
-st.markdown(f"""
+st.markdown(
+    f"""
     | Limitation | Detail |
     |---|---|
     | **Three-month window** | Nov 2020 – Jan 2021 covers one holiday season. Patterns may differ in other periods. |
@@ -213,14 +224,16 @@ st.markdown(f"""
     | **No causal interpretation** | All associations are observational. High-propensity sessions may share characteristics that drive purchase intent independently of any intervention. Controlled A/B experiments are required before acting on model scores. |
     | **No production deployment** | This is an offline portfolio prototype. No live scoring pipeline, serving infrastructure, or monitoring system exists. |
     | **Public obfuscated sample** | Results are specific to this dataset and should not be generalised to the real Google Merchandise Store without validation on unobfuscated data. |
-    """)
+    """
+)
 
 st.divider()
 
 # ── Repository structure ───────────────────────────────────────────────────────
 st.header("6. Repository Structure")
 
-st.markdown("""
+st.markdown(
+    """
     Key paths in this repository:
 
     | Path | Contents |
@@ -239,7 +252,8 @@ st.markdown("""
     - Google Cloud credentials or service-account keys
     - Raw BigQuery exports or large data files outside `data/processed/demo/`
     - A serialised model artifact (the fitted model lives only in notebook kernel memory)
-    """)
+    """
+)
 
 st.info(
     "This dashboard is an **offline portfolio prototype** demonstrating "

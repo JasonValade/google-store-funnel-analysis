@@ -162,13 +162,15 @@ if chart_option == "Precision-Recall Curves":
         "logistic regression was narrow."
     )
     with st.expander("ℹ️ Why is PR-AUC preferred over ROC-AUC here?"):
-        st.markdown("""
+        st.markdown(
+            """
             The dataset is heavily class-imbalanced: only ~6% of sessions purchased.
             ROC-AUC can appear high even for weak models on imbalanced data because
             it averages over all classification thresholds. Precision-Recall AUC
             focuses on the minority positive class and is more informative when
             recall of purchasers is the operational goal.
-            """)
+            """
+        )
 
 elif chart_option == "Calibration Curves":
     st.markdown(
@@ -185,7 +187,8 @@ elif chart_option == "Calibration Curves":
         delta_color="inverse",
     )
     with st.expander("ℹ️ Calibration method"):
-        st.markdown("""
+        st.markdown(
+            """
             **Sigmoid (Platt) calibration** was fitted on the validation set only
             (`FrozenEstimator` + `CalibratedClassifierCV(method="sigmoid", cv=None)`
             from scikit-learn ≥ 1.4).
@@ -194,7 +197,10 @@ elif chart_option == "Calibration Curves":
             calibration fitting cannot re-use test-set information. The threshold
             of **{:.4f}** was selected by maximising F1 on calibrated validation
             probabilities and was not re-tuned on the test set.
-            """.format(metrics["calibrated_threshold"]))
+            """.format(
+                metrics["calibrated_threshold"]
+            )
+        )
 
 elif chart_option == "Risk-Decile Lift":
     st.markdown(
@@ -344,7 +350,8 @@ st.divider()
 st.subheader("Methodology Notes")
 
 with st.expander("Feature engineering and leakage prevention"):
-    st.markdown("""
+    st.markdown(
+        """
         **Prediction moment:** immediately after the session's first `view_item` event.
         Only signals observable at or before that moment are used as features.
 
@@ -361,10 +368,12 @@ with st.expander("Feature engineering and leakage prevention"):
         - Device category, country, acquisition source/medium (OHE, min_frequency=50)
         - First-item name and category (OHE, min_frequency=50)
         - First-item price (log-transformed)
-        """)
+        """
+    )
 
 with st.expander("Class weighting and calibration rationale"):
-    st.markdown(f"""
+    st.markdown(
+        f"""
         **Class imbalance:** ~{metrics['overall_positive_rate']*100:.1f}% of sessions purchased.
         Both LR and RF were fitted with `class_weight='balanced'` /
         `class_weight='balanced_subsample'` to prevent the model from predicting
@@ -376,7 +385,8 @@ with st.expander("Class weighting and calibration rationale"):
         **{metrics['test_brier_uncalibrated']:.4f}**; after calibration it dropped to
         **{metrics['test_brier_calibrated']:.4f}**, confirming substantially improved
         probability reliability.
-        """)
+        """
+    )
 
 st.info(
     "**Causal interpretation:** This model identifies statistical associations between "
