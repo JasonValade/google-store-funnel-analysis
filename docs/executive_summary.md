@@ -63,6 +63,46 @@ A machine learning model achieved **3.12× lift** in the top risk decile, captur
 
 ---
 
+## ROI & What-If Calculator
+
+Interactive tool for modeling conversion improvements and estimating revenue impact with confidence intervals.
+
+**Capabilities:**
+- Model funnel stage improvements (view-to-checkout, checkout-to-purchase)
+- Calculate ROI with implementation costs
+- Generate confidence intervals for projections
+- Compare multiple scenarios side-by-side
+
+**Business Application:**
+- Prioritize optimization initiatives based on projected impact
+- Justify investment decisions with data-driven projections
+- Conduct sensitivity analysis on key assumptions (AOV, improvement rates)
+- Calculate payback periods for improvement initiatives
+
+**Example:** A 20% improvement in both funnel stages could generate $180K-$360K annual revenue lift (depending on AOV assumptions).
+
+---
+
+## Time-Series Forecasting
+
+Predictive analytics for forecasting future conversion rates and purchase volumes with seasonal pattern analysis.
+
+**Capabilities:**
+- Time-series decomposition (trend, seasonality, noise)
+- Multiple forecasting models (linear trend, moving average, exponential smoothing)
+- Confidence intervals for forecasts
+- Seasonal pattern identification
+
+**Business Application:**
+- Forecast future conversion rates for inventory planning
+- Predict purchase volumes for resource allocation
+- Identify seasonal patterns for marketing campaign timing
+- Proactive planning with confidence intervals
+
+**Note:** Forecasts based on limited historical data (3 months, holiday season). Use as planning guidance, not absolute predictions.
+
+---
+
 ## Tracking Health Monitoring
 
 Successfully detected all four confirmed `add_to_cart` tracking outages (November 21-24).
@@ -101,20 +141,31 @@ Successfully detected all four confirmed `add_to_cart` tracking outages (Novembe
    - Test targeted interventions (promotions, support)
    - Monitor conversion lift from interventions
 
-6. **Attribution investigation**
+6. **ROI-driven optimization planning**
+   - Use ROI Calculator to prioritize improvement initiatives
+   - Model multiple scenarios before implementation
+   - Calculate payback periods for investments
+   - Validate assumptions through A/B testing
+
+7. **Attribution investigation**
    - Audit self-referral rates
    - Validate channel attribution accuracy
    - Re-evaluate acquisition budget allocation
 
 ### Long-Term Considerations (3-6 months)
 
-7. **Personalization framework**
+8. **Personalization framework**
    - Build on propensity model for personalized recommendations
    - Segment-specific messaging based on behavior patterns
 
-8. **Real-time analytics**
+9. **Real-time analytics**
    - Deploy live dashboard for daily monitoring
    - Integrate with production systems for real-time alerts
+
+10. **Forecasting-driven planning**
+   - Use time-series forecasts for inventory optimization
+   - Align staffing and resources with predicted demand
+   - Plan marketing campaigns around seasonal patterns
 
 ---
 

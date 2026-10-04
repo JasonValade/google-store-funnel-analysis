@@ -186,7 +186,55 @@ The Google Merchandise Store operates an e-commerce platform selling branded mer
 
 ---
 
-### BR-7: Stakeholder Communication
+### BR-7: ROI & What-If Calculator
+
+**Requirement:** Build interactive tool for modeling conversion improvements and estimating revenue impact.
+
+**Business Need:** Enable data-driven investment decisions and optimization prioritization.
+
+**Acceptance Criteria:**
+- [ ] Calculate baseline conversion metrics from historical data
+- [ ] Model funnel stage improvements (view-to-checkout, checkout-to-purchase)
+- [ ] Calculate ROI with implementation costs
+- [ ] Generate confidence intervals for projections
+- [ ] Compare multiple scenarios side-by-side
+- [ ] Provide sensitivity analysis on key assumptions
+
+**Deliverables:**
+- ROI Calculator analysis notebook
+- Interactive dashboard page
+- Scenario comparison templates
+- ROI calculation methodology documentation
+
+**Business Value:** Prioritize optimization initiatives based on projected impact and justify investment decisions.
+
+---
+
+### BR-8: Time-Series Forecasting
+
+**Requirement:** Build forecasting system for predicting future conversion rates and purchase volumes.
+
+**Business Need:** Enable proactive planning and resource allocation based on predicted demand.
+
+**Acceptance Criteria:**
+- [ ] Decompose time series into trend, seasonality, and noise components
+- [ ] Implement multiple forecasting models (linear trend, moving average, exponential smoothing)
+- [ ] Generate confidence intervals for forecasts
+- [ ] Identify seasonal patterns in conversion data
+- [ ] Forecast purchase volumes for inventory planning
+- [ ] Provide business impact recommendations
+
+**Deliverables:**
+- Time-series forecasting analysis notebook
+- Interactive dashboard page
+- Forecast visualization charts
+- Seasonal pattern analysis report
+
+**Business Value:** Forecast future performance for inventory optimization, resource allocation, and marketing campaign timing.
+
+---
+
+### BR-9: Stakeholder Communication
 
 **Requirement:** Communicate insights to different audiences.
 

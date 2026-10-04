@@ -42,7 +42,7 @@ features_df = load_model_features()
 # ══════════════════════════════════════════════════════════════════════════════
 st.subheader("Device Conversion Rates")
 
-st.plotly_chart(device_bar_chart(device_df), use_container_width=True, theme="streamlit")
+st.plotly_chart(device_bar_chart(device_df), width='stretch', theme="streamlit")
 
 display = device_df.copy()
 display["device_category"] = display["device_category"].str.capitalize()
@@ -59,7 +59,7 @@ display = display.rename(
 )
 st.dataframe(
     display,
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
     column_config={
         "Views": st.column_config.NumberColumn(format="%d"),
@@ -193,7 +193,7 @@ st.dataframe(
             "session_purchase_rate_pct": "Session purchase rate %",
         }
     ),
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
     column_config={
         "Product-view sessions": st.column_config.NumberColumn(format="%d"),

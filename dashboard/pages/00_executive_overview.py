@@ -119,7 +119,7 @@ with col_funnel:
             [total_views, total_checkouts, total_purchases],
             title="",
         ),
-        use_container_width=True,
+        width='stretch',
         theme="streamlit",
     )
 
@@ -143,7 +143,7 @@ with col_trend:
     weekly_trimmed = weekly_df[weekly_df["week_start"] >= "2020-11-02"].copy()
     st.plotly_chart(
         weekly_conversion_chart(weekly_trimmed),
-        use_container_width=True,
+        width='stretch',
         theme="streamlit",
     )
     st.caption(

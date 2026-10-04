@@ -19,18 +19,22 @@ An end-to-end analytics portfolio project that turns 4.3 million Google Analytic
 - Detected all four manually confirmed `add_to_cart` outage dates with a traffic-adjusted tracking-health monitor.
 - Developed a leakage-safe purchase-propensity model with **0.1402 test PR-AUC**, versus a **0.0504 no-skill baseline**.
 - Ranked the highest-risk scoring decile at **3.12× lift**, capturing **31.3% of purchases**.
-- Shipped a six-page Streamlit dashboard powered by committed, pre-computed artifacts—no credentials or live database required.
+- Built an **ROI & What-If Calculator** for modeling conversion improvements and estimating revenue impact with confidence intervals.
+- Implemented **time-series forecasting** for predicting future conversion rates and purchase volumes with seasonal pattern analysis.
+- Shipped a nine-page Streamlit dashboard powered by committed, pre-computed artifacts—no credentials or live database required.
 
 ## Business question
 
 Where do customers abandon the purchase journey, which segments and products underperform, and can early-session behavior identify visitors who are more likely to purchase?
 
-The project addresses this through four connected workstreams:
+The project addresses this through six connected workstreams:
 
 1. Ordered session-funnel analysis
 2. Device, acquisition, and product segmentation
 3. GA4 tracking-health monitoring
 4. Session-level purchase-propensity modeling
+5. ROI & What-If Calculator for conversion optimization planning
+6. Time-series forecasting for predictive analytics and resource planning
 
 ## Key findings
 
@@ -102,13 +106,13 @@ The model uses chronological train/validation/test splits to prevent leakage, ex
 .
 ├── .github/workflows/    # CI/CD pipeline configuration
 ├── app.py                 # Streamlit Cloud entry point
-├── dashboard/            # Seven-page results application
+├── dashboard/            # Nine-page results application
 │   ├── pages/           # Dashboard page components
 │   └── utils/           # Reusable chart and data-loading utilities
 ├── data/processed/demo/  # Deployment-safe analytical artifacts
 ├── docs/                 # Documentation (executive summary, methodology, features)
 ├── images/               # Exported analysis visuals
-├── notebooks/            # Statistical, monitoring, and ML workflows
+├── notebooks/            # Statistical, monitoring, ML, and business analytics workflows
 ├── sql/                  # BigQuery analysis, feature, and validation queries
 ├── tests/                # Unit tests for dashboard utilities
 ├── pyproject.toml       # Modern Python packaging with dev dependencies
@@ -126,8 +130,12 @@ Notable files:
 - [`sql/12_tracking_health_monitor.sql`](sql/12_tracking_health_monitor.sql) — event-health signals
 - [`sql/13_model_feature_validation.sql`](sql/13_model_feature_validation.sql) — feature quality checks
 - [`notebooks/03_purchase_prediction.ipynb`](notebooks/03_purchase_prediction.ipynb) — model training and evaluation
+- [`notebooks/04_roi_what_if_calculator.ipynb`](notebooks/04_roi_what_if_calculator.ipynb) — ROI & What-If Calculator analysis (NEW)
+- [`notebooks/05_time_series_forecasting.ipynb`](notebooks/05_time_series_forecasting.ipynb) — time-series forecasting analysis (NEW)
 - [`dashboard/README.md`](dashboard/README.md) — dashboard pages and artifact inputs
 - [`dashboard/pages/06_analysis_journey.py`](dashboard/pages/06_analysis_journey.py) — complete analytical walkthrough
+- [`dashboard/pages/07_roi_calculator.py`](dashboard/pages/07_roi_calculator.py) — ROI & What-If Calculator dashboard (NEW)
+- [`dashboard/pages/08_time_series_forecasting.py`](dashboard/pages/08_time_series_forecasting.py) — time-series forecasting dashboard (NEW)
 - [`docs/executive_summary.md`](docs/executive_summary.md) — business-focused summary
 - [`docs/executive_presentation.md`](docs/executive_presentation.md) — executive slide deck
 - [`docs/visual_story.md`](docs/visual_story.md) — narrative visual walkthrough

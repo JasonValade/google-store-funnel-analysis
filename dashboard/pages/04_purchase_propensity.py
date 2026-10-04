@@ -152,7 +152,7 @@ if chart_option == "Precision-Recall Curves":
         pr_curves_chart(
             pr_curves, no_skill=metrics["validation_purchases"] / metrics["validation_rows"]
         ),
-        use_container_width=True,
+        width='stretch',
         theme="streamlit",
     )
     st.caption(
@@ -177,7 +177,7 @@ elif chart_option == "Calibration Curves":
         "**Calibration curves on the test set** (equal-frequency bins, n = 10). "
         "Well-calibrated probabilities lie close to the diagonal."
     )
-    st.plotly_chart(calibration_chart(cal_curves), use_container_width=True, theme="streamlit")
+    st.plotly_chart(calibration_chart(cal_curves), width='stretch', theme="streamlit")
     col_c1, col_c2 = st.columns(2)
     col_c1.metric("Brier score (uncalibrated)", f"{metrics['test_brier_uncalibrated']:.4f}")
     col_c2.metric(
@@ -207,7 +207,7 @@ elif chart_option == "Risk-Decile Lift":
         "**Purchase rate by predicted-risk decile** (calibrated RF, test set). "
         "Decile 1 contains sessions with the highest predicted purchase probability."
     )
-    st.plotly_chart(decile_chart(deciles), use_container_width=True, theme="streamlit")
+    st.plotly_chart(decile_chart(deciles), width='stretch', theme="streamlit")
 
     st.dataframe(
         deciles.assign(
@@ -222,7 +222,7 @@ elif chart_option == "Risk-Decile Lift":
                 "lift": "Lift",
             }
         ),
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
     )
 
@@ -233,7 +233,7 @@ elif chart_option == "Feature Associations (LR)":
         "purchase probability in the LR model trained on the same data. "
         "**These are not causal effects — the data is observational.**"
     )
-    st.plotly_chart(coefficient_chart(coefs), use_container_width=True, theme="streamlit")
+    st.plotly_chart(coefficient_chart(coefs), width='stretch', theme="streamlit")
     st.caption(
         "Display labels are human-readable; hover text preserves raw sklearn feature names. "
         "The LR model was not selected by validation PR-AUC (Random Forest was selected by a "
@@ -272,7 +272,7 @@ st.dataframe(
             "threshold": "Threshold",
         }
     ),
-    use_container_width=True,
+    width='stretch',
     hide_index=True,
 )
 
@@ -316,7 +316,7 @@ split_data = {
         "Final one-time evaluation (untouched)",
     ],
 }
-st.dataframe(pd.DataFrame(split_data), use_container_width=True, hide_index=True)
+st.dataframe(pd.DataFrame(split_data), width='stretch', hide_index=True)
 
 st.divider()
 
@@ -337,7 +337,7 @@ cm_df = pd.DataFrame(
     index=["Actual: No purchase", "Actual: Purchase"],
     columns=["Predicted: No purchase", "Predicted: Purchase"],
 )
-st.dataframe(cm_df, use_container_width=True)
+st.dataframe(cm_df, width='stretch')
 
 cm1, cm2, cm3 = st.columns(3)
 cm1.metric("Precision", f"{metrics['test_precision']:.4f}", help="TP / (TP + FP)")

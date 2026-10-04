@@ -47,6 +47,16 @@ def main() -> None:
             icon="🤖",
         ),
         st.Page(
+            base_dir / "pages" / "07_roi_calculator.py",
+            title="ROI Calculator",
+            icon="💰",
+        ),
+        st.Page(
+            base_dir / "pages" / "08_time_series_forecasting.py",
+            title="Time-Series Forecasting",
+            icon="📈",
+        ),
+        st.Page(
             base_dir / "pages" / "05_methodology.py",
             title="Methodology & Limitations",
             icon="📋",
