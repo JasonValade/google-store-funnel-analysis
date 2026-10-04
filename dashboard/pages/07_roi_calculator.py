@@ -2,10 +2,8 @@
 07_roi_calculator.py — ROI & What-If Calculator page.
 """
 
-import streamlit as st
 import pandas as pd
-import numpy as np
-from pathlib import Path
+import streamlit as st
 
 from dashboard.utils.data_loader import (
     load_device_funnel,
@@ -343,26 +341,26 @@ comparison_data = []
 for scenario in comparison_scenarios:
     vc_imp = scenario['view_checkout']
     cp_imp = scenario['checkout_purchase']
-    
+
     imp_vc = baseline_view_to_checkout * (1 + vc_imp / 100)
     imp_cp = baseline_checkout_to_purchase * (1 + cp_imp / 100)
     imp_conv = imp_vc * imp_cp
-    
+
     new_chk = baseline_views * imp_vc
     new_pur = new_chk * imp_cp
     base_pur = baseline_views * baseline_view_to_checkout * baseline_checkout_to_purchase
-    
+
     add_pur_weekly = new_pur - base_pur
     add_pur_annual = add_pur_weekly * 52
-    
+
     week_rev_lift = add_pur_weekly * aov
     ann_rev_lift = week_rev_lift * 52
-    
+
     total_cost = scenario['cost'] + scenario['monthly'] * time_horizon_months
     total_benefit = ann_rev_lift * (time_horizon_months / 12)
     net_benefit = total_benefit - total_cost
     roi_calc = ((total_benefit - total_cost) / total_cost) * 100 if total_cost > 0 else 0
-    
+
     comparison_data.append({
         "Scenario": scenario['name'],
         "V-C Improvement (%)": vc_imp,

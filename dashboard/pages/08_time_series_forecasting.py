@@ -2,11 +2,10 @@
 08_time_series_forecasting.py — Time-Series Forecasting page.
 """
 
-import streamlit as st
-import pandas as pd
 import numpy as np
+import pandas as pd
+import streamlit as st
 from scipy import stats
-from pathlib import Path
 
 from dashboard.utils.data_loader import (
     load_weekly_conversion,
@@ -204,19 +203,19 @@ def linear_trend_forecast(series, periods):
     x = np.arange(len(series))
     y = series.values
     slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
-    
+
     forecasts = []
     for i in range(periods):
         forecast = intercept + slope * (len(series) + i)
         forecasts.append(forecast)
-    
+
     return forecasts, {'slope': slope, 'intercept': intercept, 'r_squared': r_value**2}
 
 def simple_moving_average_forecast(series, window=4, periods=8):
     """Simple moving average forecast."""
     forecasts = []
     series_copy = series.copy()
-    for i in range(periods):
+    for _i in range(periods):
         forecast = series_copy.tail(window).mean()
         forecasts.append(forecast)
         series_copy = pd.concat([series_copy, pd.Series([forecast])])
@@ -227,10 +226,10 @@ def exponential_smoothing_forecast(series, alpha=0.3, periods=8):
     smoothed = [series.iloc[0]]
     for i in range(1, len(series)):
         smoothed.append(alpha * series.iloc[i] + (1 - alpha) * smoothed[-1])
-    
+
     forecasts = []
     last_smoothed = smoothed[-1]
-    for i in range(periods):
+    for _i in range(periods):
         forecasts.append(last_smoothed)
     return forecasts
 
@@ -272,14 +271,14 @@ def calculate_ci(historical_data, forecast, confidence_level):
     """Calculate confidence intervals based on historical volatility."""
     std_dev = historical_data.std()
     z_score = stats.norm.ppf((1 + confidence_level) / 2)
-    
+
     ci_lower = []
     ci_upper = []
     for i, f in enumerate(forecast):
         uncertainty = std_dev * np.sqrt(1 + i / len(historical_data))
         ci_lower.append(f - z_score * uncertainty)
         ci_upper.append(f + z_score * uncertainty)
-    
+
     return ci_lower, ci_upper
 
 conv_ci_lower, conv_ci_upper = calculate_ci(
