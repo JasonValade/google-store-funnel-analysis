@@ -40,12 +40,12 @@ st.info(
 
 # Load data
 weekly_df = load_weekly_conversion()
-weekly_df_clean = weekly_df[weekly_df['week_start'] > '2020-10-31'].copy()
+weekly_df_clean = weekly_df[weekly_df["week_start"] > "2020-10-31"].copy()
 
 # Convert conversion rates from percentage to decimal
-weekly_df_clean['view_to_checkout_rate'] = weekly_df_clean['view_to_checkout_rate'] / 100
-weekly_df_clean['checkout_to_purchase_rate'] = weekly_df_clean['checkout_to_purchase_rate'] / 100
-weekly_df_clean['purchase_conversion_rate'] = weekly_df_clean['purchase_conversion_rate'] / 100
+weekly_df_clean["view_to_checkout_rate"] = weekly_df_clean["view_to_checkout_rate"] / 100
+weekly_df_clean["checkout_to_purchase_rate"] = weekly_df_clean["checkout_to_purchase_rate"] / 100
+weekly_df_clean["purchase_conversion_rate"] = weekly_df_clean["purchase_conversion_rate"] / 100
 
 st.divider()
 
@@ -58,23 +58,19 @@ with col_hist1:
     st.metric(
         "Analysis Period",
         f"{len(weekly_df_clean)} weeks",
-        help="Number of weeks in historical data"
+        help="Number of weeks in historical data",
     )
 
 with col_hist2:
-    avg_conversion = weekly_df_clean['purchase_conversion_rate'].mean()
+    avg_conversion = weekly_df_clean["purchase_conversion_rate"].mean()
     st.metric(
-        "Avg Conversion Rate",
-        f"{avg_conversion:.2%}",
-        help="Average historical conversion rate"
+        "Avg Conversion Rate", f"{avg_conversion:.2%}", help="Average historical conversion rate"
     )
 
 with col_hist3:
-    avg_purchases = weekly_df_clean['purchase_sessions'].mean()
+    avg_purchases = weekly_df_clean["purchase_sessions"].mean()
     st.metric(
-        "Avg Weekly Purchases",
-        f"{avg_purchases:,.0f}",
-        help="Average weekly purchase volume"
+        "Avg Weekly Purchases", f"{avg_purchases:,.0f}", help="Average weekly purchase volume"
     )
 
 st.divider()
@@ -84,7 +80,7 @@ st.subheader("📉 Trend Analysis")
 
 # Calculate linear trend
 x = np.arange(len(weekly_df_clean))
-y = weekly_df_clean['purchase_conversion_rate'].values
+y = weekly_df_clean["purchase_conversion_rate"].values
 slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
 
 col_trend1, col_trend2 = st.columns(2)
@@ -95,20 +91,18 @@ with col_trend1:
         "Trend Direction",
         trend_direction,
         delta=f"{slope * 100:.4f}%/week",
-        help="Linear trend direction and slope"
+        help="Linear trend direction and slope",
     )
 
 with col_trend2:
     st.metric(
         "Trend Strength (R²)",
         f"{r_value**2:.4f}",
-        help="How well the linear trend fits the data (0-1)"
+        help="How well the linear trend fits the data (0-1)",
     )
 
 # Plot historical trend
-st.line_chart(
-    weekly_df_clean.set_index('week_start')['purchase_conversion_rate']
-)
+st.line_chart(weekly_df_clean.set_index("week_start")["purchase_conversion_rate"])
 
 st.caption(
     f"**Trend Analysis**: {trend_direction} trend with R² = {r_value**2:.4f}. "
@@ -121,10 +115,10 @@ st.divider()
 st.subheader("🗓️ Seasonal Pattern Analysis")
 
 # Extract month
-weekly_df_clean['month'] = weekly_df_clean['week_start'].dt.month
-monthly_avg = weekly_df_clean.groupby('month')['purchase_conversion_rate'].mean()
+weekly_df_clean["month"] = weekly_df_clean["week_start"].dt.month
+monthly_avg = weekly_df_clean.groupby("month")["purchase_conversion_rate"].mean()
 
-month_names = ['November', 'December', 'January']
+month_names = ["November", "December", "January"]
 col_season1, col_season2 = st.columns(2)
 
 with col_season1:
@@ -133,7 +127,7 @@ with col_season1:
         "Peak Month",
         peak_month,
         delta=f"{monthly_avg.max():.2%}",
-        help="Month with highest average conversion rate"
+        help="Month with highest average conversion rate",
     )
 
 with col_season2:
@@ -142,18 +136,13 @@ with col_season2:
         "Lowest Month",
         low_month,
         delta=f"{monthly_avg.min():.2%}",
-        help="Month with lowest average conversion rate"
+        help="Month with lowest average conversion rate",
     )
 
 # Plot seasonal pattern
-seasonal_df = pd.DataFrame({
-    'Month': month_names,
-    'Avg Conversion Rate': monthly_avg.values
-})
+seasonal_df = pd.DataFrame({"Month": month_names, "Avg Conversion Rate": monthly_avg.values})
 
-st.bar_chart(
-    seasonal_df.set_index('Month')
-)
+st.bar_chart(seasonal_df.set_index("Month"))
 
 st.caption(
     f"**Seasonal Variation**: {monthly_avg.max() - monthly_avg.min():.2%} difference between peak and low months. "
@@ -174,7 +163,7 @@ with col_forecast1:
         max_value=12,
         value=8,
         step=1,
-        help="Number of weeks to forecast ahead"
+        help="Number of weeks to forecast ahead",
     )
 
 with col_forecast2:
@@ -182,7 +171,7 @@ with col_forecast2:
         "Confidence Level",
         [0.80, 0.90, 0.95, 0.99],
         index=2,
-        help="Confidence level for prediction intervals"
+        help="Confidence level for prediction intervals",
     )
 
 # Forecast model selection
@@ -190,13 +179,14 @@ forecast_model = st.selectbox(
     "Forecast Model",
     ["Linear Trend", "Simple Moving Average", "Exponential Smoothing"],
     index=0,
-    help="Choose forecasting method"
+    help="Choose forecasting method",
 )
 
 st.divider()
 
 # Generate forecasts
 st.subheader("📊 Forecast Results")
+
 
 def linear_trend_forecast(series, periods):
     """Linear trend forecast using OLS regression."""
@@ -209,7 +199,8 @@ def linear_trend_forecast(series, periods):
         forecast = intercept + slope * (len(series) + i)
         forecasts.append(forecast)
 
-    return forecasts, {'slope': slope, 'intercept': intercept, 'r_squared': r_value**2}
+    return forecasts, {"slope": slope, "intercept": intercept, "r_squared": r_value**2}
+
 
 def simple_moving_average_forecast(series, window=4, periods=8):
     """Simple moving average forecast."""
@@ -220,6 +211,7 @@ def simple_moving_average_forecast(series, window=4, periods=8):
         forecasts.append(forecast)
         series_copy = pd.concat([series_copy, pd.Series([forecast])])
     return forecasts
+
 
 def exponential_smoothing_forecast(series, alpha=0.3, periods=8):
     """Simple exponential smoothing forecast."""
@@ -233,38 +225,30 @@ def exponential_smoothing_forecast(series, alpha=0.3, periods=8):
         forecasts.append(last_smoothed)
     return forecasts
 
+
 # Generate forecasts based on selected model
 if forecast_model == "Linear Trend":
     conversion_forecast, model_params = linear_trend_forecast(
-        weekly_df_clean['purchase_conversion_rate'],
-        forecast_periods
+        weekly_df_clean["purchase_conversion_rate"], forecast_periods
     )
     purchase_forecast, _ = linear_trend_forecast(
-        weekly_df_clean['purchase_sessions'],
-        forecast_periods
+        weekly_df_clean["purchase_sessions"], forecast_periods
     )
 elif forecast_model == "Simple Moving Average":
     conversion_forecast = simple_moving_average_forecast(
-        weekly_df_clean['purchase_conversion_rate'],
-        window=4,
-        periods=forecast_periods
+        weekly_df_clean["purchase_conversion_rate"], window=4, periods=forecast_periods
     )
     purchase_forecast = simple_moving_average_forecast(
-        weekly_df_clean['purchase_sessions'],
-        window=4,
-        periods=forecast_periods
+        weekly_df_clean["purchase_sessions"], window=4, periods=forecast_periods
     )
 else:  # Exponential Smoothing
     conversion_forecast = exponential_smoothing_forecast(
-        weekly_df_clean['purchase_conversion_rate'],
-        alpha=0.3,
-        periods=forecast_periods
+        weekly_df_clean["purchase_conversion_rate"], alpha=0.3, periods=forecast_periods
     )
     purchase_forecast = exponential_smoothing_forecast(
-        weekly_df_clean['purchase_sessions'],
-        alpha=0.3,
-        periods=forecast_periods
+        weekly_df_clean["purchase_sessions"], alpha=0.3, periods=forecast_periods
     )
+
 
 # Calculate confidence intervals
 def calculate_ci(historical_data, forecast, confidence_level):
@@ -281,41 +265,40 @@ def calculate_ci(historical_data, forecast, confidence_level):
 
     return ci_lower, ci_upper
 
+
 conv_ci_lower, conv_ci_upper = calculate_ci(
-    weekly_df_clean['purchase_conversion_rate'],
-    conversion_forecast,
-    confidence_level
+    weekly_df_clean["purchase_conversion_rate"], conversion_forecast, confidence_level
 )
 
 pur_ci_lower, pur_ci_upper = calculate_ci(
-    weekly_df_clean['purchase_sessions'],
-    purchase_forecast,
-    confidence_level
+    weekly_df_clean["purchase_sessions"], purchase_forecast, confidence_level
 )
 
 # Create forecast dates
-last_date = weekly_df_clean['week_start'].iloc[-1]
+last_date = weekly_df_clean["week_start"].iloc[-1]
 future_dates = pd.date_range(
-    start=last_date + pd.Timedelta(weeks=1),
-    periods=forecast_periods,
-    freq='W-MON'
+    start=last_date + pd.Timedelta(weeks=1), periods=forecast_periods, freq="W-MON"
 )
 
 # Create forecast dataframe
-forecast_df = pd.DataFrame({
-    'week_start': future_dates,
-    'conversion_rate_forecast': conversion_forecast,
-    'conversion_rate_lower': conv_ci_lower,
-    'conversion_rate_upper': conv_ci_upper,
-    'purchase_volume_forecast': purchase_forecast,
-    'purchase_volume_lower': pur_ci_lower,
-    'purchase_volume_upper': pur_ci_upper
-})
+forecast_df = pd.DataFrame(
+    {
+        "week_start": future_dates,
+        "conversion_rate_forecast": conversion_forecast,
+        "conversion_rate_lower": conv_ci_lower,
+        "conversion_rate_upper": conv_ci_upper,
+        "purchase_volume_forecast": purchase_forecast,
+        "purchase_volume_lower": pur_ci_lower,
+        "purchase_volume_upper": pur_ci_upper,
+    }
+)
 
 # Display forecast table
 st.dataframe(
-    forecast_df[['week_start', 'conversion_rate_forecast', 'conversion_rate_lower', 'conversion_rate_upper']],
-    hide_index=True
+    forecast_df[
+        ["week_start", "conversion_rate_forecast", "conversion_rate_lower", "conversion_rate_upper"]
+    ],
+    hide_index=True,
 )
 
 st.divider()
@@ -324,19 +307,17 @@ st.divider()
 st.subheader("📈 Forecast Visualization")
 
 # Combine historical and forecast for plotting
-historical_conv = weekly_df_clean[['week_start', 'purchase_conversion_rate']].copy()
-historical_conv['type'] = 'Historical'
+historical_conv = weekly_df_clean[["week_start", "purchase_conversion_rate"]].copy()
+historical_conv["type"] = "Historical"
 
-forecast_conv = forecast_df[['week_start', 'conversion_rate_forecast']].copy()
-forecast_conv.columns = ['week_start', 'purchase_conversion_rate']
-forecast_conv['type'] = 'Forecast'
+forecast_conv = forecast_df[["week_start", "conversion_rate_forecast"]].copy()
+forecast_conv.columns = ["week_start", "purchase_conversion_rate"]
+forecast_conv["type"] = "Forecast"
 
 combined_conv = pd.concat([historical_conv, forecast_conv])
 
 # Plot conversion rate forecast
-st.line_chart(
-    combined_conv.set_index('week_start')['purchase_conversion_rate']
-)
+st.line_chart(combined_conv.set_index("week_start")["purchase_conversion_rate"])
 
 st.caption(
     f"**{forecast_model} Forecast**: {forecast_periods} weeks ahead with {confidence_level*100:.0f}% confidence interval. "
@@ -349,23 +330,23 @@ st.divider()
 st.subheader("📦 Purchase Volume Forecast")
 
 st.dataframe(
-    forecast_df[['week_start', 'purchase_volume_forecast', 'purchase_volume_lower', 'purchase_volume_upper']],
-    hide_index=True
+    forecast_df[
+        ["week_start", "purchase_volume_forecast", "purchase_volume_lower", "purchase_volume_upper"]
+    ],
+    hide_index=True,
 )
 
 # Plot purchase volume forecast
-historical_pur = weekly_df_clean[['week_start', 'purchase_sessions']].copy()
-historical_pur['type'] = 'Historical'
+historical_pur = weekly_df_clean[["week_start", "purchase_sessions"]].copy()
+historical_pur["type"] = "Historical"
 
-forecast_pur = forecast_df[['week_start', 'purchase_volume_forecast']].copy()
-forecast_pur.columns = ['week_start', 'purchase_sessions']
-forecast_pur['type'] = 'Forecast'
+forecast_pur = forecast_df[["week_start", "purchase_volume_forecast"]].copy()
+forecast_pur.columns = ["week_start", "purchase_sessions"]
+forecast_pur["type"] = "Forecast"
 
 combined_pur = pd.concat([historical_pur, forecast_pur])
 
-st.line_chart(
-    combined_pur.set_index('week_start')['purchase_sessions']
-)
+st.line_chart(combined_pur.set_index("week_start")["purchase_sessions"])
 
 st.divider()
 
@@ -373,9 +354,11 @@ st.divider()
 st.subheader("💼 Business Impact")
 
 # Calculate business metrics
-avg_weekly_purchases = weekly_df_clean['purchase_sessions'].mean()
+avg_weekly_purchases = weekly_df_clean["purchase_sessions"].mean()
 forecast_weekly_purchases = np.mean(purchase_forecast)
-forecast_change_pct = ((forecast_weekly_purchases - avg_weekly_purchases) / avg_weekly_purchases) * 100
+forecast_change_pct = (
+    (forecast_weekly_purchases - avg_weekly_purchases) / avg_weekly_purchases
+) * 100
 
 aov = st.number_input(
     "Average Order Value ($) for revenue calculation",
@@ -383,7 +366,7 @@ aov = st.number_input(
     max_value=500,
     value=75,
     step=5,
-    help="Estimated average order value"
+    help="Estimated average order value",
 )
 
 current_weekly_revenue = avg_weekly_purchases * aov
@@ -397,21 +380,19 @@ with col_impact1:
         "Forecast Change",
         f"{forecast_change_pct:+.1f}%",
         delta=f"{forecast_change_pct:+.1f}%",
-        help="Percentage change in weekly purchases"
+        help="Percentage change in weekly purchases",
     )
 
 with col_impact2:
     st.metric(
         "Weekly Revenue Change",
         f"${revenue_change:+,.0f}",
-        help=f"Change in weekly revenue at ${aov} AOV"
+        help=f"Change in weekly revenue at ${aov} AOV",
     )
 
 with col_impact3:
     st.metric(
-        "Annual Revenue Change",
-        f"${revenue_change * 52:+,.0f}",
-        help="Annualized revenue change"
+        "Annual Revenue Change", f"${revenue_change * 52:+,.0f}", help="Annualized revenue change"
     )
 
 st.divider()
@@ -428,14 +409,14 @@ with col_risk1:
     st.metric(
         "Forecast Volatility",
         f"{forecast_volatility:.0f} purchases/week",
-        help="Standard deviation of forecasted purchases"
+        help="Standard deviation of forecasted purchases",
     )
 
 with col_risk2:
     st.metric(
         "Revenue Volatility",
         f"${revenue_volatility:,.0f}/week",
-        help="Standard deviation of forecasted revenue"
+        help="Standard deviation of forecasted revenue",
     )
 
 st.divider()
@@ -446,17 +427,31 @@ st.subheader("🎯 Recommendations")
 recommendations = []
 
 if forecast_change_pct > 5:
-    recommendations.append("📈 **Increasing Trend**: Plan for increased inventory and staffing to meet higher demand.")
-    recommendations.append("📦 **Inventory**: Increase inventory orders based on upward trend forecast.")
+    recommendations.append(
+        "📈 **Increasing Trend**: Plan for increased inventory and staffing to meet higher demand."
+    )
+    recommendations.append(
+        "📦 **Inventory**: Increase inventory orders based on upward trend forecast."
+    )
 elif forecast_change_pct < -5:
-    recommendations.append("📉 **Decreasing Trend**: Investigate causes of decline and plan recovery campaigns.")
+    recommendations.append(
+        "📉 **Decreasing Trend**: Investigate causes of decline and plan recovery campaigns."
+    )
     recommendations.append("📦 **Inventory**: Reduce inventory orders to match declining demand.")
 else:
-    recommendations.append("➡️ **Stable Trend**: Maintain current inventory levels and continue monitoring.")
+    recommendations.append(
+        "➡️ **Stable Trend**: Maintain current inventory levels and continue monitoring."
+    )
 
-recommendations.append("🎯 **Risk Management**: Use confidence intervals for contingency planning and buffer inventory.")
-recommendations.append("📊 **Monitoring**: Re-forecast monthly with updated data to adjust plans as conditions change.")
-recommendations.append("🧪 **Validation**: Compare forecasts to actuals regularly to improve model accuracy.")
+recommendations.append(
+    "🎯 **Risk Management**: Use confidence intervals for contingency planning and buffer inventory."
+)
+recommendations.append(
+    "📊 **Monitoring**: Re-forecast monthly with updated data to adjust plans as conditions change."
+)
+recommendations.append(
+    "🧪 **Validation**: Compare forecasts to actuals regularly to improve model accuracy."
+)
 
 for rec in recommendations:
     st.markdown(rec)
@@ -467,5 +462,5 @@ st.warning(
     "**Forecast Limitations**: Based on limited historical data (3 months, holiday season). "
     "Forecasts assume historical patterns continue and do not account for external factors "
     "(promotions, events, economic changes). Use as planning guidance, not absolute predictions.",
-    icon="⚠️"
+    icon="⚠️",
 )

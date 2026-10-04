@@ -105,7 +105,7 @@ st.caption(
     "Critical outages have event-volume ratio = 0."
 )
 
-st.plotly_chart(tracking_scatter(filtered), width='stretch', theme="streamlit")
+st.plotly_chart(tracking_scatter(filtered), width="stretch", theme="streamlit")
 
 with st.expander("ℹ️ How the ratios are computed"):
     st.markdown(
@@ -181,7 +181,7 @@ for col in ["Observed", "Expected", "Page views", "Expected PV"]:
 
 st.dataframe(
     display_df,
-    width='stretch',
+    width="stretch",
     hide_index=True,
     column_config={
         "Observed": st.column_config.NumberColumn(format="%d"),

@@ -42,12 +42,12 @@ device_df = load_device_funnel()
 weekly_df = load_weekly_conversion()
 
 # Calculate baseline metrics
-weekly_df_clean = weekly_df[weekly_df['week_start'] > '2020-10-31'].copy()
+weekly_df_clean = weekly_df[weekly_df["week_start"] > "2020-10-31"].copy()
 
-baseline_views = weekly_df_clean['product_view_sessions'].mean()
-baseline_view_to_checkout = weekly_df_clean['view_to_checkout_rate'].mean() / 100
-baseline_checkout_to_purchase = weekly_df_clean['checkout_to_purchase_rate'].mean() / 100
-baseline_purchases = weekly_df_clean['purchase_sessions'].mean()
+baseline_views = weekly_df_clean["product_view_sessions"].mean()
+baseline_view_to_checkout = weekly_df_clean["view_to_checkout_rate"].mean() / 100
+baseline_checkout_to_purchase = weekly_df_clean["checkout_to_purchase_rate"].mean() / 100
+baseline_purchases = weekly_df_clean["purchase_sessions"].mean()
 baseline_conversion = baseline_view_to_checkout * baseline_checkout_to_purchase
 
 st.divider()
@@ -61,21 +61,21 @@ with col1:
     st.metric(
         "Avg Weekly Product Views",
         f"{baseline_views:,.0f}",
-        help="Average weekly product view sessions (historical)"
+        help="Average weekly product view sessions (historical)",
     )
 
 with col2:
     st.metric(
         "Avg Weekly Purchases",
         f"{baseline_purchases:,.0f}",
-        help="Average weekly purchase sessions (historical)"
+        help="Average weekly purchase sessions (historical)",
     )
 
 with col3:
     st.metric(
         "Overall Conversion Rate",
         f"{baseline_conversion:.2%}",
-        help="Current overall conversion rate (view → purchase)"
+        help="Current overall conversion rate (view → purchase)",
     )
 
 st.divider()
@@ -92,14 +92,14 @@ with col_aov1:
         max_value=500,
         value=75,
         step=5,
-        help="Estimated average order value for revenue calculations"
+        help="Estimated average order value for revenue calculations",
     )
 
 with col_aov2:
     st.info(
         f"**Current weekly revenue estimate:** ${baseline_purchases * aov:,.0f}  \n"
         f"**Current annual revenue estimate:** ${baseline_purchases * aov * 52:,.0f}",
-        icon="📈"
+        icon="📈",
     )
 
 st.divider()
@@ -116,7 +116,7 @@ with col_vc:
         max_value=100,
         value=20,
         step=5,
-        help="Percentage improvement in view-to-checkout conversion rate"
+        help="Percentage improvement in view-to-checkout conversion rate",
     )
 
 with col_cp:
@@ -126,17 +126,21 @@ with col_cp:
         max_value=100,
         value=20,
         step=5,
-        help="Percentage improvement in checkout-to-purchase conversion rate"
+        help="Percentage improvement in checkout-to-purchase conversion rate",
     )
 
 # Calculate projected metrics
 improved_view_to_checkout = baseline_view_to_checkout * (1 + view_checkout_improvement / 100)
-improved_checkout_to_purchase = baseline_checkout_to_purchase * (1 + checkout_purchase_improvement / 100)
+improved_checkout_to_purchase = baseline_checkout_to_purchase * (
+    1 + checkout_purchase_improvement / 100
+)
 improved_conversion = improved_view_to_checkout * improved_checkout_to_purchase
 
 new_checkouts = baseline_views * improved_view_to_checkout
 new_purchases = new_checkouts * improved_checkout_to_purchase
-baseline_purchases_current = baseline_views * baseline_view_to_checkout * baseline_checkout_to_purchase
+baseline_purchases_current = (
+    baseline_views * baseline_view_to_checkout * baseline_checkout_to_purchase
+)
 
 additional_purchases_weekly = new_purchases - baseline_purchases_current
 additional_purchases_annually = additional_purchases_weekly * 52
@@ -160,7 +164,7 @@ with col_impact1:
         "New Overall Conversion Rate",
         f"{improved_conversion:.2%}",
         delta=f"{improved_conversion - baseline_conversion:+.2%}",
-        help="Projected overall conversion rate after improvements"
+        help="Projected overall conversion rate after improvements",
     )
 
 with col_impact2:
@@ -168,7 +172,7 @@ with col_impact2:
         "Additional Weekly Purchases",
         f"{additional_purchases_weekly:,.0f}",
         delta=f"{additional_purchases_weekly:,.0f}",
-        help="Additional purchases per week from improvements"
+        help="Additional purchases per week from improvements",
     )
 
 with col_impact3:
@@ -176,7 +180,7 @@ with col_impact3:
         "Weekly Revenue Lift",
         f"${weekly_revenue_lift:,.0f}",
         delta=f"+{lift_percentage:.1f}%",
-        help="Additional weekly revenue from improvements"
+        help="Additional weekly revenue from improvements",
     )
 
 st.divider()
@@ -190,14 +194,14 @@ with col_annual1:
     st.metric(
         "Annual Revenue Lift",
         f"${annual_revenue_lift:,.0f}",
-        help="Projected annual revenue increase from improvements"
+        help="Projected annual revenue increase from improvements",
     )
 
 with col_annual2:
     st.metric(
         "Additional Annual Purchases",
         f"{additional_purchases_annually:,.0f}",
-        help="Projected additional purchases per year"
+        help="Projected additional purchases per year",
     )
 
 st.divider()
@@ -216,7 +220,7 @@ with col_cost1:
         max_value=100000,
         value=10000,
         step=1000,
-        help="One-time cost to implement the improvements"
+        help="One-time cost to implement the improvements",
     )
 
 with col_cost2:
@@ -226,7 +230,7 @@ with col_cost2:
         max_value=10000,
         value=200,
         step=50,
-        help="Monthly operational costs (e.g., licensing, maintenance)"
+        help="Monthly operational costs (e.g., licensing, maintenance)",
     )
 
 with col_cost3:
@@ -236,7 +240,7 @@ with col_cost3:
         max_value=60,
         value=12,
         step=1,
-        help="Time horizon for ROI calculation"
+        help="Time horizon for ROI calculation",
     )
 
 # Calculate ROI
@@ -247,7 +251,7 @@ net_benefit = total_benefit - total_cost
 roi = ((total_benefit - total_cost) / total_cost) * 100 if total_cost > 0 else 0
 
 monthly_benefit = annual_revenue_lift / 12
-payback_months = implementation_cost / monthly_benefit if monthly_benefit > 0 else float('inf')
+payback_months = implementation_cost / monthly_benefit if monthly_benefit > 0 else float("inf")
 
 st.divider()
 
@@ -260,22 +264,20 @@ with col_roi1:
         "ROI",
         f"{roi:.0f}%",
         delta=f"{roi:.0f}%",
-        help="Return on investment as percentage of total cost"
+        help="Return on investment as percentage of total cost",
     )
 
 with col_roi2:
     st.metric(
         "Net Benefit",
         f"${net_benefit:,.0f}",
-        help="Total benefit minus total costs over time horizon"
+        help="Total benefit minus total costs over time horizon",
     )
 
 with col_roi3:
-    payback_display = f"{payback_months:.1f} months" if payback_months != float('inf') else "Never"
+    payback_display = f"{payback_months:.1f} months" if payback_months != float("inf") else "Never"
     st.metric(
-        "Payback Period",
-        payback_display,
-        help="Time to recover one-time implementation cost"
+        "Payback Period", payback_display, help="Time to recover one-time implementation cost"
     )
 
 st.divider()
@@ -289,21 +291,17 @@ with col_cost_breakdown1:
     st.metric(
         "Total Implementation Cost",
         f"${implementation_cost:,.0f}",
-        help="One-time implementation cost"
+        help="One-time implementation cost",
     )
 
 with col_cost_breakdown2:
     st.metric(
         "Total Ongoing Cost",
         f"${total_ongoing_cost:,.0f}",
-        help=f"${ongoing_monthly_cost:,.0f}/month × {time_horizon_months} months"
+        help=f"${ongoing_monthly_cost:,.0f}/month × {time_horizon_months} months",
     )
 
-st.metric(
-    "Total Cost",
-    f"${total_cost:,.0f}",
-    help="Sum of implementation and ongoing costs"
-)
+st.metric("Total Cost", f"${total_cost:,.0f}", help="Sum of implementation and ongoing costs")
 
 st.divider()
 
@@ -319,28 +317,28 @@ comparison_scenarios = [
         "view_checkout": 10,
         "checkout_purchase": 10,
         "cost": 5000,
-        "monthly": 100
+        "monthly": 100,
     },
     {
         "name": "Moderate",
         "view_checkout": 20,
         "checkout_purchase": 20,
         "cost": 10000,
-        "monthly": 200
+        "monthly": 200,
     },
     {
         "name": "Aggressive",
         "view_checkout": 30,
         "checkout_purchase": 30,
         "cost": 20000,
-        "monthly": 300
-    }
+        "monthly": 300,
+    },
 ]
 
 comparison_data = []
 for scenario in comparison_scenarios:
-    vc_imp = scenario['view_checkout']
-    cp_imp = scenario['checkout_purchase']
+    vc_imp = scenario["view_checkout"]
+    cp_imp = scenario["checkout_purchase"]
 
     imp_vc = baseline_view_to_checkout * (1 + vc_imp / 100)
     imp_cp = baseline_checkout_to_purchase * (1 + cp_imp / 100)
@@ -356,21 +354,23 @@ for scenario in comparison_scenarios:
     week_rev_lift = add_pur_weekly * aov
     ann_rev_lift = week_rev_lift * 52
 
-    total_cost = scenario['cost'] + scenario['monthly'] * time_horizon_months
+    total_cost = scenario["cost"] + scenario["monthly"] * time_horizon_months
     total_benefit = ann_rev_lift * (time_horizon_months / 12)
     net_benefit = total_benefit - total_cost
     roi_calc = ((total_benefit - total_cost) / total_cost) * 100 if total_cost > 0 else 0
 
-    comparison_data.append({
-        "Scenario": scenario['name'],
-        "V-C Improvement (%)": vc_imp,
-        "C-P Improvement (%)": cp_imp,
-        "New Conversion (%)": f"{imp_conv:.2%}",
-        "Annual Revenue Lift ($)": f"${ann_rev_lift:,.0f}",
-        "Total Cost ($)": f"${total_cost:,.0f}",
-        "Net Benefit ($)": f"${net_benefit:,.0f}",
-        "ROI (%)": f"{roi_calc:.0f}%"
-    })
+    comparison_data.append(
+        {
+            "Scenario": scenario["name"],
+            "V-C Improvement (%)": vc_imp,
+            "C-P Improvement (%)": cp_imp,
+            "New Conversion (%)": f"{imp_conv:.2%}",
+            "Annual Revenue Lift ($)": f"${ann_rev_lift:,.0f}",
+            "Total Cost ($)": f"${total_cost:,.0f}",
+            "Net Benefit ($)": f"${net_benefit:,.0f}",
+            "ROI (%)": f"{roi_calc:.0f}%",
+        }
+    )
 
 comparison_df = pd.DataFrame(comparison_data)
 st.dataframe(comparison_df, hide_index=True)
@@ -383,11 +383,15 @@ st.subheader("🎯 Key Insights")
 insights = []
 
 if lift_percentage > 20:
-    insights.append("✅ **High Impact**: This scenario would significantly improve conversion rates and revenue.")
+    insights.append(
+        "✅ **High Impact**: This scenario would significantly improve conversion rates and revenue."
+    )
 elif lift_percentage > 10:
     insights.append("✅ **Moderate Impact**: This scenario would provide meaningful improvement.")
 else:
-    insights.append("⚠️ **Low Impact**: Consider more aggressive improvements or focus on higher-impact areas.")
+    insights.append(
+        "⚠️ **Low Impact**: Consider more aggressive improvements or focus on higher-impact areas."
+    )
 
 if roi > 100:
     insights.append("✅ **Excellent ROI**: Returns exceed investment by more than 100%.")
@@ -415,5 +419,5 @@ st.divider()
 st.info(
     "**Note**: These projections are based on historical data and assumptions. "
     "Actual results may vary. Validate assumptions through A/B testing before making significant investments.",
-    icon="⚠️"
+    icon="⚠️",
 )

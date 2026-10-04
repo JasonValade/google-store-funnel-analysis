@@ -71,7 +71,7 @@ st.subheader("Weekly Purchase Conversion Rate")
 
 st.plotly_chart(
     weekly_conversion_chart(filtered),
-    width='stretch',
+    width="stretch",
     theme="streamlit",
 )
 
@@ -127,7 +127,7 @@ with col_funnel:
             ["Product view", "Begin checkout", "Purchase"],
             [all_views, all_checkouts, all_purchases],
         ),
-        width='stretch',
+        width="stretch",
         theme="streamlit",
     )
 
@@ -198,6 +198,6 @@ st.dataframe(
             "purchase_conversion_rate": "Overall rate %",
         }
     ),
-    width='stretch',
+    width="stretch",
     hide_index=True,
 )
