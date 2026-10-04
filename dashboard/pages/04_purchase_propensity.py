@@ -152,7 +152,7 @@ if chart_option == "Precision-Recall Curves":
         pr_curves_chart(
             pr_curves, no_skill=metrics["validation_purchases"] / metrics["validation_rows"]
         ),
-        width="stretch",
+        use_container_width=True,
         theme="streamlit",
     )
     st.caption(
@@ -162,22 +162,20 @@ if chart_option == "Precision-Recall Curves":
         "logistic regression was narrow."
     )
     with st.expander("ℹ️ Why is PR-AUC preferred over ROC-AUC here?"):
-        st.markdown(
-            """
+        st.markdown("""
             The dataset is heavily class-imbalanced: only ~6% of sessions purchased.
             ROC-AUC can appear high even for weak models on imbalanced data because
             it averages over all classification thresholds. Precision-Recall AUC
             focuses on the minority positive class and is more informative when
             recall of purchasers is the operational goal.
-            """
-        )
+            """)
 
 elif chart_option == "Calibration Curves":
     st.markdown(
         "**Calibration curves on the test set** (equal-frequency bins, n = 10). "
         "Well-calibrated probabilities lie close to the diagonal."
     )
-    st.plotly_chart(calibration_chart(cal_curves), width="stretch", theme="streamlit")
+    st.plotly_chart(calibration_chart(cal_curves), use_container_width=True, theme="streamlit")
     col_c1, col_c2 = st.columns(2)
     col_c1.metric("Brier score (uncalibrated)", f"{metrics['test_brier_uncalibrated']:.4f}")
     col_c2.metric(
@@ -187,8 +185,7 @@ elif chart_option == "Calibration Curves":
         delta_color="inverse",
     )
     with st.expander("ℹ️ Calibration method"):
-        st.markdown(
-            """
+        st.markdown("""
             **Sigmoid (Platt) calibration** was fitted on the validation set only
             (`FrozenEstimator` + `CalibratedClassifierCV(method="sigmoid", cv=None)`
             from scikit-learn ≥ 1.4).
@@ -197,17 +194,14 @@ elif chart_option == "Calibration Curves":
             calibration fitting cannot re-use test-set information. The threshold
             of **{:.4f}** was selected by maximising F1 on calibrated validation
             probabilities and was not re-tuned on the test set.
-            """.format(
-                metrics["calibrated_threshold"]
-            )
-        )
+            """.format(metrics["calibrated_threshold"]))
 
 elif chart_option == "Risk-Decile Lift":
     st.markdown(
         "**Purchase rate by predicted-risk decile** (calibrated RF, test set). "
         "Decile 1 contains sessions with the highest predicted purchase probability."
     )
-    st.plotly_chart(decile_chart(deciles), width="stretch", theme="streamlit")
+    st.plotly_chart(decile_chart(deciles), use_container_width=True, theme="streamlit")
 
     st.dataframe(
         deciles.assign(
@@ -222,7 +216,7 @@ elif chart_option == "Risk-Decile Lift":
                 "lift": "Lift",
             }
         ),
-        width="stretch",
+        use_container_width=True,
         hide_index=True,
     )
 
@@ -233,7 +227,7 @@ elif chart_option == "Feature Associations (LR)":
         "purchase probability in the LR model trained on the same data. "
         "**These are not causal effects — the data is observational.**"
     )
-    st.plotly_chart(coefficient_chart(coefs), width="stretch", theme="streamlit")
+    st.plotly_chart(coefficient_chart(coefs), use_container_width=True, theme="streamlit")
     st.caption(
         "Display labels are human-readable; hover text preserves raw sklearn feature names. "
         "The LR model was not selected by validation PR-AUC (Random Forest was selected by a "
@@ -272,7 +266,7 @@ st.dataframe(
             "threshold": "Threshold",
         }
     ),
-    width="stretch",
+    use_container_width=True,
     hide_index=True,
 )
 
@@ -316,7 +310,7 @@ split_data = {
         "Final one-time evaluation (untouched)",
     ],
 }
-st.dataframe(pd.DataFrame(split_data), width="stretch", hide_index=True)
+st.dataframe(pd.DataFrame(split_data), use_container_width=True, hide_index=True)
 
 st.divider()
 
@@ -337,7 +331,7 @@ cm_df = pd.DataFrame(
     index=["Actual: No purchase", "Actual: Purchase"],
     columns=["Predicted: No purchase", "Predicted: Purchase"],
 )
-st.dataframe(cm_df, width="stretch")
+st.dataframe(cm_df, use_container_width=True)
 
 cm1, cm2, cm3 = st.columns(3)
 cm1.metric("Precision", f"{metrics['test_precision']:.4f}", help="TP / (TP + FP)")
@@ -350,8 +344,7 @@ st.divider()
 st.subheader("Methodology Notes")
 
 with st.expander("Feature engineering and leakage prevention"):
-    st.markdown(
-        """
+    st.markdown("""
         **Prediction moment:** immediately after the session's first `view_item` event.
         Only signals observable at or before that moment are used as features.
 
@@ -368,12 +361,10 @@ with st.expander("Feature engineering and leakage prevention"):
         - Device category, country, acquisition source/medium (OHE, min_frequency=50)
         - First-item name and category (OHE, min_frequency=50)
         - First-item price (log-transformed)
-        """
-    )
+        """)
 
 with st.expander("Class weighting and calibration rationale"):
-    st.markdown(
-        f"""
+    st.markdown(f"""
         **Class imbalance:** ~{metrics['overall_positive_rate']*100:.1f}% of sessions purchased.
         Both LR and RF were fitted with `class_weight='balanced'` /
         `class_weight='balanced_subsample'` to prevent the model from predicting
@@ -385,8 +376,7 @@ with st.expander("Class weighting and calibration rationale"):
         **{metrics['test_brier_uncalibrated']:.4f}**; after calibration it dropped to
         **{metrics['test_brier_calibrated']:.4f}**, confirming substantially improved
         probability reliability.
-        """
-    )
+        """)
 
 st.info(
     "**Causal interpretation:** This model identifies statistical associations between "

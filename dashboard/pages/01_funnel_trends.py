@@ -71,7 +71,7 @@ st.subheader("Weekly Purchase Conversion Rate")
 
 st.plotly_chart(
     weekly_conversion_chart(filtered),
-    width="stretch",
+    use_container_width=True,
     theme="streamlit",
 )
 
@@ -89,8 +89,7 @@ mc4.metric("View → Checkout", f"{total_checkouts/total_views*100:.2f}%")
 mc5.metric("Overall conversion", f"{total_purchases/total_views*100:.2f}%")
 
 with st.expander("ℹ️ Tracking limitation: Add to cart gap"):
-    st.markdown(
-        """
+    st.markdown("""
         **Add to cart tracking was unreliable across two periods:**
 
         - **Nov 1–15, 2020**: Add to cart (`add_to_cart`) counts are present but
@@ -106,8 +105,7 @@ with st.expander("ℹ️ Tracking limitation: Add to cart gap"):
         (Product view → Begin checkout → Purchase) is unaffected.
 
         See the **Tracking Health** page for the full alert timeline.
-        """
-    )
+        """)
 
 st.divider()
 
@@ -127,26 +125,23 @@ with col_funnel:
             ["Product view", "Begin checkout", "Purchase"],
             [all_views, all_checkouts, all_purchases],
         ),
-        width="stretch",
+        use_container_width=True,
         theme="streamlit",
     )
 
 with col_note:
     st.markdown("#### Stage-to-stage conversion")
-    st.markdown(
-        f"""
+    st.markdown(f"""
 | Stage | Sessions | Conversion |
 |---|---:|---:|
 | Product view | {all_views:,} | — |
 | Begin checkout | {all_checkouts:,} | {all_checkouts/all_views*100:.2f}% (view → checkout) |
 | Purchase | {all_purchases:,} | {all_purchases/all_checkouts*100:.2f}% (checkout → purchase) |
 | **Overall** | | **{all_purchases/all_views*100:.2f}%** |
-        """
-    )
+        """)
 
     st.markdown("---")
-    st.markdown(
-        """
+    st.markdown("""
         **Clean cart funnel** (restricted to Nov 25 – Jan 31):
 
         | Stage | Sessions | Rate |
@@ -159,8 +154,7 @@ with col_note:
 
         The add-to-cart stage is excluded from the primary funnel due to
         tracking gaps in November 2020.
-        """
-    )
+        """)
 
 st.divider()
 
@@ -198,6 +192,6 @@ st.dataframe(
             "purchase_conversion_rate": "Overall rate %",
         }
     ),
-    width="stretch",
+    use_container_width=True,
     hide_index=True,
 )
